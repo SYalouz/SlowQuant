@@ -34,11 +34,12 @@ SUBROUTINE runERI(basisidx, basisfloat, basisint, max_angular_moment, E1arr, E2a
     ALLOCATE(Rbuffer(4*max_angular_moment+1,4*max_angular_moment+1,4*max_angular_moment+1,12*max_angular_moment+1), STAT=ALSTAT)
     !if(ALSTAT /= 0) STOP "***NEED MORE PYLONS***" 
     
-	ERI = 0.0d0
-
-    munu = 0
-    lamsig = 0
+    !ERI = 0.0d0
+    !munu = 0
+    !lamsig = 0
     ! Loop over basisfunctions
+    !$OMP PARALLEL DO schedule(dynamic) default(private) shared(basisidx,basisfloat,basisint,&
+	!$OMP& max_angular_moment,E1arr,E2arr,E3arr,ERI) 
     DO mu = 0, size(basisidx,1)-1
         DO nu = mu, size(basisidx,1)-1
             munu = mu*(mu+1)/2+nu
@@ -105,11 +106,11 @@ SUBROUTINE runERI(basisidx, basisfloat, basisint, max_angular_moment, E1arr, E2a
                                         alpha = p*q/(p+q)
                                         
                                         call R(l1+l2+l3+l4, m1+m2+m3+m4, n1+n2+n3+n4, Qx, Qy, Qz, Px,&
-                                        &		Py, Pz, alpha, R1buffer, Rbuffer)
+                                                & Py, Pz, alpha, R1buffer, Rbuffer)
                                         call elelrep(p, q, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4,&
-                                        &			Normalization1, Normalization2, Normalization3,&
-                                        &			Normalization4, c1, c2, c3, c4, E1, E2, E3, E4, E5, E6,&
-                                        &			R1buffer, outputvalue)
+                                                    & Normalization1, Normalization2, Normalization3,&
+                                                    & Normalization4, c1, c2, c3, c4, E1, E2, E3, E4, E5, E6,&
+                                                    & R1buffer, outputvalue)
                                         calc = calc + outputvalue
                                     END DO
                                 END DO
@@ -128,6 +129,7 @@ SUBROUTINE runERI(basisidx, basisfloat, basisint, max_angular_moment, E1arr, E2a
             END DO
         END DO
     END DO
+    !$OMP END PARALLEL DO
     !return ERI
 END SUBROUTINE runERI
         
@@ -166,7 +168,7 @@ PURE SUBROUTINE R(l1l2, m1m2, n1n2, Cx, Cy, Cz, Px, Py, Pz, p, R1, Rbuffer)
                 DO n = 0, l1l2+m1m2+n1n2 - exclude_from_n
                     outputvalue = 0.0d0
                     IF (t == 0 .AND. u == 0 .AND. v == 0) THEN
-						CALL boys(real(n,8),p*RPC*RPC,F)
+                        CALL boys(real(n,8),p*RPC*RPC,F)
                         Rbuffer(t+1,u+1,v+1,n+1) = (-2.0d0*p)**n*F
                     ELSE
                         IF (t == 0 .AND. u == 0) THEN
@@ -200,7 +202,7 @@ END SUBROUTINE R
 
 
 PURE SUBROUTINE elelrep(p, q, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, Normalization1, Normalization2, &
-&                        Normalization3, Normalization4, c1, c2, c3, c4, E1, E2, E3, E4, E5, E6, Rpre, outputvalue)
+                        & Normalization3, Normalization4, c1, c2, c3, c4, E1, E2, E3, E4, E5, E6, Rpre, outputvalue)
     IMPLICIT NONE
     ! INPUT
     INTEGER, INTENT(in) :: l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4
@@ -237,49 +239,49 @@ PURE SUBROUTINE elelrep(p, q, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, No
 END SUBROUTINE elelrep
 
 PURE SUBROUTINE factorial2(n, outval)
-	IMPLICIT NONE
-	REAL(8), INTENT(in) :: n
-	INTEGER :: n_range, i
-	REAL(8), INTENT(out) :: outval
-	n_range = int(n)
-	outval = 1.0d0
-	IF (n > 0) THEN
-		DO i=0, (n_range+1)/2-1
-			outval = outval*(n-2*i)
-		END DO
-	END IF
+    IMPLICIT NONE
+    REAL(8), INTENT(in) :: n
+    INTEGER :: n_range, i
+    REAL(8), INTENT(out) :: outval
+    n_range = int(n)
+    outval = 1.0d0
+    IF (n > 0) THEN
+        DO i=0, (n_range+1)/2-1
+            outval = outval*(n-2*i)
+        END DO
+    END IF
 END SUBROUTINE factorial2
 
 PURE SUBROUTINE boys(m, z, F)
-	IMPLICIT NONE
-	REAL(8), INTENT(in) :: m, z
-	INTEGER :: i
-	REAL(8) :: Fcheck, outval, temp1
-	REAL(8), PARAMETER :: pi = 3.141592653589793238462643383279
-	REAL(8), INTENT(out) :: F
-	IF (z > 25.0d0) THEN
-	    ! long range approximation
-		CALL factorial2(2*m-1,outval)
-		F = outval/(2.0d0**(m+1))*(pi/(z**(2*m+1)))**0.5
-	ElSE IF (z == 0) THEN
-		! special case of T = 0
+    IMPLICIT NONE
+    REAL(8), INTENT(in) :: m, z
+    INTEGER :: i
+    REAL(8) :: Fcheck, outval, temp1
+    REAL(8), PARAMETER :: pi = 3.141592653589793238462643383279
+    REAL(8), INTENT(out) :: F
+    IF (z > 25.0d0) THEN
+        ! long range approximation
+        CALL factorial2(2*m-1,outval)
+        F = outval/(2.0d0**(m+1))*(pi/(z**(2*m+1)))**0.5
+    ElSE IF (z == 0) THEN
+        ! special case of T = 0
         F = 1.0d0/(2.0d0*m+1.0d0)
-	ELSE
-		F = 0.0d0
-		CALL factorial2(2*m-1,outval)
-		temp1 = outval
-		DO i=0, 100
-			Fcheck = F
-			CALL factorial2(2*m+2*i+1,outval)
-			F = F + (temp1*(2.0d0*z)**i)/outval
-			Fcheck = Fcheck - F
-			! threshold from purple book
-			IF (ABS(Fcheck) < 10e-10) THEN
-				EXIT
-			END IF
-		END DO
-		F = F*exp(-z)
-	END IF
+    ELSE
+        F = 0.0d0
+        CALL factorial2(2*m-1,outval)
+        temp1 = outval
+        DO i=0, 1000
+            Fcheck = F
+            CALL factorial2(2*m+2*i+1,outval)
+            F = F + (temp1*(2.0d0*z)**i)/outval
+            Fcheck = Fcheck - F
+            ! threshold from purple book
+            IF (ABS(Fcheck) < 10e-10) THEN
+                EXIT
+            END IF
+        END DO
+        F = F*exp(-z)
+    END IF
 END SUBROUTINE boys
 
 

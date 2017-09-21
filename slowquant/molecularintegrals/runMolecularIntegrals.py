@@ -2,7 +2,8 @@ import numpy as np
 import copy
 import time
 from slowquant.molecularintegrals.runMIcython import runCythonIntegrals, runE, runCythonRunGeoDev, runQMESPcython
-from slowquant.molecularintegrals.MIpython import nucrep, nucdiff, Nrun, Ndiff1, Ndiff2, u_ObaraSaika
+from slowquant.molecularintegrals.MolecularIntegrals import nucrep, nucdiff, Nrun, Ndiff1, Ndiff2, u_ObaraSaika
+import slowquant.molecularintegrals.FortranERI as FE
 
 ##CALC OF INTEGRALS
 def runIntegrals(input, basis, settings, results):
@@ -47,22 +48,26 @@ def runIntegrals(input, basis, settings, results):
     Na = np.zeros((len(basisidx),len(basisidx)))
     S = np.zeros((len(basisidx),len(basisidx)))
     T = np.zeros((len(basisidx),len(basisidx)))
-    ERI = np.zeros((len(basisidx),len(basisidx),len(basisidx),len(basisidx)))
     # Making array to save E
     E1arr = np.zeros((len(basisidx),len(basisidx),np.max(basisidx[:,0]),np.max(basisidx[:,0]),np.max(basisint[:,0:3])*2+1))
     E2arr = np.zeros((len(basisidx),len(basisidx),np.max(basisidx[:,0]),np.max(basisidx[:,0]),np.max(basisint[:,0:3])*2+1))
     E3arr = np.zeros((len(basisidx),len(basisidx),np.max(basisidx[:,0]),np.max(basisidx[:,0]),np.max(basisint[:,0:3])*2+1))
-    # Array to store R values, only created once if created here
     R1buffer = np.zeros((4*np.max(basisint)+1,4*np.max(basisint)+1,4*np.max(basisint)+1))
     Rbuffer = np.zeros((4*np.max(basisint)+1,4*np.max(basisint)+1,4*np.max(basisint)+1,3*4*np.max(basisint)+1))
     
-    Na, S, T, ERI = runCythonIntegrals(basisidx, basisfloat, basisint, input, Na, S, T, ERI, E1arr, E2arr, E3arr, R1buffer, Rbuffer)
-
+    Na, S, T, E1arr, E2arr, E3arr = runCythonIntegrals(basisidx, basisfloat, basisint, input, Na, S, T, E1arr, E2arr, E3arr, R1buffer, Rbuffer,)
+    E1arr = np.array(E1arr)
+    E2arr = np.array(E2arr)
+    E3arr = np.array(E3arr)
+    # CALL F2PY ERI
+    max_angular_momement = np.max(basisidx[:,0])
+    ERI = FE.lol.runeri(basisidx, basisfloat, basisint, max_angular_momement, E1arr, E2arr, E3arr)
+    
     results['VNN'] = VNN
     results['VNe'] = np.array(Na)
     results['S'] = np.array(S)
     results['Te'] = np.array(T)
-    results['Vee'] = np.array(ERI)
+    results['Vee'] = np.ascontiguousarray(ERI)
     return results
     #END OF two electron integrals
 

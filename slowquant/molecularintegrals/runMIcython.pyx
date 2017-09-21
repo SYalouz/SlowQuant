@@ -4,11 +4,11 @@ cimport numpy as np
 include "MIcython.pxi"
 
 
-cpdef runCythonIntegrals(int [:,:] basisidx, double [:,:] basisfloat, int [:,:] basisint, double[:,:] input, double[:,:] Na, double[:,:] S, double[:,:] T, double[:,:,:,:] ERI, double [:,:,:,:,:]  E1arr, double [:,:,:,:,:] E2arr, double [:,:,:,:,:] E3arr, double [:,:,:] R1buffer, double [:,:,:,:] Rbuffer):
-    cdef double calc, calc2, calc3, a, b, c, d, Ax, Bx, Cx, Dx, Ay, By, Cy, Dy, Az, Bz, Cz, Dz, Zc, Px, Py, Pz, Qx, Qy, Qz, p, q, RPC, RPQ, calct, calct2, N1, N2, N3, N4, c1, c2, c3, c4, alpha
-    cdef double [:] Ex, Ey, Ez, E1, E2, E3, E4, E5, E6
+cpdef runCythonIntegrals(int [:,:] basisidx, double [:,:] basisfloat, int [:,:] basisint, double[:,:] input, double[:,:] Na, double[:,:] S, double[:,:] T, double [:,:,:,:,:]  E1arr, double [:,:,:,:,:] E2arr, double [:,:,:,:,:] E3arr, double [:,:,:] R1buffer, double [:,:,:,:] Rbuffer):
+    cdef double calc, calc2, calc3, a, b, Ax, Bx, Cx, Ay, By, Cy,Az, Bz, Cz, Zc, Px, Py, Pz, p, RPC, calct, calct2, N1, N2, c1, c2,
+    cdef double [:] Ex, Ey, Ez
     cdef double [:,:,:] R1
-    cdef int k, l, i, j, mu, nu, lam, sig, t, u, v, atom, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, munu, lamsig
+    cdef int k, l, i, j, t, u, v, atom, l1, l2, m1, m2, n1, n2
     
     # basisidx [number of primitives, start index in basisfloat and basisint]
     # basisfloat array of float values for basis, N, zeta, c, x, y, z 
@@ -73,86 +73,8 @@ cpdef runCythonIntegrals(int [:,:] basisidx, double [:,:] basisfloat, int [:,:] 
             Na[k,l] = Na[l,k] = calc
             S[k,l]  = S[l,k]  = calc3
             T[k,l]  = T[l,k]  = calc2
-    #END OF one electron integrals
 
-    # Run ERI
-    for mu in range(0, len(basisidx)):
-        for nu in range(mu, len(basisidx)):
-            munu = mu*(mu+1)//2+nu
-            for lam in range(0, len(basisidx)):
-                for sig in range(lam, len(basisidx)):
-                    lamsig = lam*(lam+1)//2+sig
-                    if munu >= lamsig:
-                        calc = 0.0
-                        for i in range(basisidx[mu,1],basisidx[mu,1]+basisidx[mu,0]):
-                            N1 = basisfloat[i,0]
-                            a  = basisfloat[i,1]
-                            c1 = basisfloat[i,2]
-                            Ax = basisfloat[i,3]
-                            Ay = basisfloat[i,4]
-                            Az = basisfloat[i,5]
-                            l1 = basisint[i,0]
-                            m1 = basisint[i,1]
-                            n1 = basisint[i,2]
-                            for j in range(basisidx[nu,1],basisidx[nu,1]+basisidx[nu,0]):
-                                N2 = basisfloat[j,0]
-                                b  = basisfloat[j,1]
-                                c2 = basisfloat[j,2]
-                                Bx = basisfloat[j,3]
-                                By = basisfloat[j,4]
-                                Bz = basisfloat[j,5]
-                                l2 = basisint[j,0]
-                                m2 = basisint[j,1]
-                                n2 = basisint[j,2]
-
-                                p   = a+b
-                                Px  = (a*Ax+b*Bx)/p
-                                Py  = (a*Ay+b*By)/p
-                                Pz  = (a*Az+b*Bz)/p
-                                
-                                E1 = E1arr[mu,nu,i-basisidx[mu,1],j-basisidx[nu,1]]
-                                E2 = E2arr[mu,nu,i-basisidx[mu,1],j-basisidx[nu,1]]
-                                E3 = E3arr[mu,nu,i-basisidx[mu,1],j-basisidx[nu,1]]
-
-                                for k in range(basisidx[lam,1],basisidx[lam,1]+basisidx[lam,0]):
-                                    N3 = basisfloat[k,0]
-                                    c  = basisfloat[k,1]
-                                    c3 = basisfloat[k,2]
-                                    Cx = basisfloat[k,3]
-                                    Cy = basisfloat[k,4]
-                                    Cz = basisfloat[k,5]
-                                    l3 = basisint[k,0]
-                                    m3 = basisint[k,1]
-                                    n3 = basisint[k,2]
-                                    for l in range(basisidx[sig,1],basisidx[sig,1]+basisidx[sig,0]):
-                                        N4 = basisfloat[l,0]
-                                        d  = basisfloat[l,1]
-                                        c4 = basisfloat[l,2]
-                                        Dx = basisfloat[l,3]
-                                        Dy = basisfloat[l,4]
-                                        Dz = basisfloat[l,5]
-                                        l4 = basisint[l,0]
-                                        m4 = basisint[l,1]
-                                        n4 = basisint[l,2]
-                                                                                    
-                                        q   = c+d
-                                        Qx  = (c*Cx+d*Dx)/q
-                                        Qy  = (c*Cy+d*Dy)/q
-                                        Qz  = (c*Cz+d*Dz)/q
-
-                                        E4 = E1arr[lam,sig,k-basisidx[lam,1],l-basisidx[sig,1]]
-                                        E5 = E2arr[lam,sig,k-basisidx[lam,1],l-basisidx[sig,1]]
-                                        E6 = E3arr[lam,sig,k-basisidx[lam,1],l-basisidx[sig,1]]
-                                        
-                                        alpha = p*q/(p+q)
-                                        
-                                        R1 = R(l1+l2+l3+l4, m1+m2+m3+m4, n1+n2+n3+n4, Qx, Qy, Qz, Px, Py, Pz, alpha, R1buffer, Rbuffer)
-                                        calc += elelrep(p,q,l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, N1, N2, N3, N4, c1, c2, c3, c4, E1, E2, E3, E4, E5, E6, R1)
-                            
-                        ERI[mu,nu,lam,sig] = ERI[nu,mu,lam,sig] = ERI[mu,nu,sig,lam] = ERI[nu,mu,sig,lam] = ERI[lam,sig,mu,nu] = ERI[sig,lam,mu,nu] = ERI[lam,sig,nu,mu] = ERI[sig,lam,nu,mu] = calc            
-                                
-    #END OF run ERI
-    return Na, S, T, ERI
+    return Na, S, T, E1arr, E2arr, E3arr
     
 
 cpdef runE(int [:,:] basisidx, double [:,:] basisfloat, int [:,:] basisint, double [:,:] input):

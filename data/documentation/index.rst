@@ -7,13 +7,8 @@ SlowQuant is a molecular quantum chemistry program written in python. Even the c
 
 ::
   
-  python SlowQuant.py MOLECULE SETTINGS
-  
-As a ready to run example:
-
-::
-  
-  python SlowQuant.py H2O.csv settingExample.csv
+  SOMETHING IS NEEDED HERE
+ 
 
 SlowQuant have the following requirements:
 
@@ -21,8 +16,6 @@ SlowQuant have the following requirements:
 - numpy 1.13.1 
 - scipy 0.19.1  
 - numba 0.34.0
-- cython 0.25.2
-- gcc 5.4.0
 
 .. toctree::
    :maxdepth: 2
@@ -33,20 +26,26 @@ SlowQuant have the following requirements:
    Examples.rst
    issues.rst
    illustrativecalc.rst
+   
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Working equations and functions
 
 .. toctree::
    :maxdepth: 2
-   :caption: Working equations and functions 
+   :caption: Legacy documentation
    
-   General.rst
-   MolecularIntegral.rst
-   IntegralTrans.rst
-   HFMethods.rst
-   DIIS.rst
-   MPn.rst
-   Properties.rst
-   GeoOpt.rst
-   CI.rst
-   CC.rst
-   BOMD.rst
+   legacy_install_example.rst
+   General_legacy.rst
+   MolecularIntegral_legacy.rst
+   IntegralTrans_legacy.rst
+   HFMethods_legacy.rst
+   DIIS_legacy.rst
+   MPn_legacy.rst
+   Properties_legacy.rst
+   GeoOpt_legacy.rst
+   CI_legacy.rst
+   CC_legacy.rst
+   BOMD_legacy.rst
    

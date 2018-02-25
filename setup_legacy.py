@@ -1,0 +1,15 @@
+from setuptools import setup
+from setuptools.extension import Extension
+from Cython.Build import cythonize
+import numpy
+#import Cython.Compiler.Options
+#Cython.Compiler.Options.get_directive_defaults()['cdivision'] = True
+#Cython.Compiler.Options.get_directive_defaults()['boundscheck'] = False
+#Cython.Compiler.Options.get_directive_defaults()['wraparound'] = False
+#Cython.Compiler.Options.get_directive_defaults()['profile'] = True
+
+ext_modules=[
+    Extension('slowquant.legacy.molecularintegrals.runMIcython',['slowquant/legacy/molecularintegrals/runMIcython.pyx']),
+    Extension('slowquant.legacy.coupledcluster.CythonCC',['slowquant/legacy/coupledcluster/CythonCC.pyx'])]
+
+setup(ext_modules=cythonize(ext_modules), include_dirs=[numpy.get_include()])

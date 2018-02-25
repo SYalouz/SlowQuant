@@ -92,35 +92,25 @@
               <p class="caption"><span class="caption-text">How to use</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation and Running</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">List of keywords</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#integrals">Integrals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#initial-method">Initial Method</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#scf">SCF</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#perturbation">Perturbation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#properties">Properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#geomoetry-optimization">Geomoetry Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-interaction">Configuration Interaction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#couple-cluster">Couple Cluster</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ab-inition-molecular-dynamics">Ab-Inition Molecular Dynamics</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">List of keywords</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html">Example input files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="issues.html">Issues</a></li>
 <li class="toctree-l1"><a class="reference internal" href="illustrativecalc.html">Illustrative calculations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Working equations and functions</span></p>
+<p class="caption"><span class="caption-text">Legacy documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="General.html">General Considerations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MolecularIntegral.html">Molecular Integrals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="IntegralTrans.html">Integral Transformations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HFMethods.html">Hartree-Fock methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="DIIS.html">DIIS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MPn.html">Perturbations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Properties.html">Properties</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GeoOpt.html">Geometry optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CI.html">Configuration Interaction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CC.html">Coupled Cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BOMD.html">Ab-Initio Molecular Dynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="legacy_install_example.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="General_legacy.html">General Implementation Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MolecularIntegral_legacy.html">Molecular Integrals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IntegralTrans_legacy.html">Integral Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HFMethods_legacy.html">Hartree-Fock methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DIIS_legacy.html">DIIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MPn_legacy.html">Perturbations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Properties_legacy.html">Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GeoOpt_legacy.html">Geometry optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CI_legacy.html">Configuration Interaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CC_legacy.html">Coupled Cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BOMD_legacy.html">Ab-Initio Molecular Dynamics</a></li>
 </ul>
 
             
@@ -186,133 +176,7 @@
             
   <div class="section" id="list-of-keywords">
 <h1>List of keywords<a class="headerlink" href="#list-of-keywords" title="Permalink to this headline">¶</a></h1>
-<p>Settings are given in the setting inputfile by using the below keywords. The order of the keywords in the setting inputfile does not matter at all.</p>
-<ul class="simple">
-<li>basisset;x</li>
-</ul>
-<p>x=bassiset used in calculation. STO2G, STO3G, DZ, DZP, 3-21G, 6-31ppGss (6-31++G**), 6-31Gs (6-31G*), 6-31pGs (6-31+G*).</p>
-<div class="section" id="integrals">
-<h2>Integrals<a class="headerlink" href="#integrals" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>None</li>
-</ul>
-</div>
-<div class="section" id="initial-method">
-<h2>Initial Method<a class="headerlink" href="#initial-method" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Initial Method;x</li>
-</ul>
-<p>Method to use during SCF. x=HF for Hartree-Fock calculation. x=UHF for unrestricted Hartree-Fock calculation.</p>
-<ul class="simple">
-<li>UHF mix guess;x</li>
-</ul>
-<p>Mix initial coefficients to break spin symmetry</p>
-</div>
-<div class="section" id="scf">
-<h2>SCF<a class="headerlink" href="#scf" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>SCF Energy Threshold;x</li>
-</ul>
-<p>Threshold for convergence of the SCF, given as x</p>
-<ul class="simple">
-<li>SCF RMSD Threshold;x</li>
-</ul>
-<p>Threshold for convergence of the SCF, given as x</p>
-<ul class="simple">
-<li>SCF Max iterations;x</li>
-</ul>
-<p>Maximum SCF iterations</p>
-<ul class="simple">
-<li>DIIS;x</li>
-</ul>
-<p>Activation of DISS, x=Yes</p>
-<ul class="simple">
-<li>Keep Steps;x</li>
-</ul>
-<p>Number of steps saved in the DIIS algorithm</p>
-</div>
-<div class="section" id="perturbation">
-<h2>Perturbation<a class="headerlink" href="#perturbation" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>MPn;x</li>
-</ul>
-<p>Møller-Plesset energy correction, x=MP2</p>
-</div>
-<div class="section" id="properties">
-<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Charge;x</li>
-</ul>
-<p>Calculation of atomic charges. x=Mulliken gives Mulliken charges. x=Lowdin gives Lowdin charges.</p>
-<ul class="simple">
-<li>Dipole;x</li>
-</ul>
-<p>Calcultion of molecular dipolemomemnt. x=Yes for calcultion.</p>
-<ul class="simple">
-<li>Excitation energy;x</li>
-</ul>
-<p>Calculation of excitation energies. x=RPA for using TDHF/RPA.</p>
-</div>
-<div class="section" id="geomoetry-optimization">
-<h2>Geomoetry Optimization<a class="headerlink" href="#geomoetry-optimization" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>GeoOpt;x</li>
-</ul>
-<p>Turns on geometry optimization. x=Yes to turn it on. Only works for Hartree-Fock.</p>
-<ul class="simple">
-<li>Max iteration GeoOpt;x</li>
-</ul>
-<p>Maximum geometry optimization steps.</p>
-<ul class="simple">
-<li>Geometry Tolerance;x</li>
-</ul>
-<p>Tolerance for convergence, given as x</p>
-<ul class="simple">
-<li>Gradient Descent Step;x</li>
-</ul>
-<p>Gradient scaling factor in Gradient Descent algorithm</p>
-<ul class="simple">
-<li>Force Numeric;x</li>
-</ul>
-<p>Choose to evaluate Forces numerically. x=Yes to activate. Only works for Hartree-Fock.</p>
-</div>
-<div class="section" id="configuration-interaction">
-<h2>Configuration Interaction<a class="headerlink" href="#configuration-interaction" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>CI;x</li>
-</ul>
-<p>To get exciation energies with CI singles. x=CIS</p>
-</div>
-<div class="section" id="couple-cluster">
-<h2>Couple Cluster<a class="headerlink" href="#couple-cluster" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>CC;x</li>
-</ul>
-<p>To run CCSD, x=CCSD. To run CCSD(T), x=CCSD(T)</p>
-<ul class="simple">
-<li>CC Max iterations;x</li>
-</ul>
-<p>Maximaum CC amplitudes iterations.</p>
-<ul class="simple">
-<li>CC RMSD Threshold;10</li>
-</ul>
-<p>RMSD Threshold for T1 and T2, given as x</p>
-<ul class="simple">
-<li>CC Energy Threshold;10</li>
-</ul>
-<p>Energy change Threshold for CC, given as x</p>
-</div>
-<div class="section" id="ab-inition-molecular-dynamics">
-<h2>Ab-Inition Molecular Dynamics<a class="headerlink" href="#ab-inition-molecular-dynamics" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>stepsize;x</li>
-</ul>
-<p>Integration stepsize for the movement of the nuclei.</p>
-<ul class="simple">
-<li>steps;20</li>
-</ul>
-<p>Number of steps for the dynamics simulation</p>
-</div>
+<p>SOMETHING HERE</p>
 </div>
 
 

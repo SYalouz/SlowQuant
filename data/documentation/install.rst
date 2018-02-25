@@ -25,13 +25,7 @@ The python packages can now be installed by:
 
 ::
   
-  conda install numpy scipy numba cython
-
-The gcc compiler can be installed by:
-
-::
-  
-  sudo apt-get install gcc
+  conda install numpy scipy numba
 
 The SlowQuant program can be downloaded by:
 
@@ -39,18 +33,11 @@ The SlowQuant program can be downloaded by:
   
   git clone https://github.com/Melisius/SlowQuant.git
 
-Inside the SlowQuant folder run:
-
-::
-  
-  python setup.py build_ext --inplace
-
 To test the installation install pytest:
 
 ::
   
   conda install pytest
-  pip install hypothesis
 
 And then run:
 
@@ -72,17 +59,7 @@ Here after all the above steps can be followed.
 Running SlowQuant
 -----------------
 
-The program is run as:
-
-::
-  
-  python SlowQuant.py MOLECULE SETTINGS
-  
-As a ready to run example:
-
-::
-  
-  python SlowQuant.py H2O.csv settingExample.csv
+SOMETHING HERE
 
 Compiling documentation
 -----------------------
@@ -91,7 +68,7 @@ The documentation is compiled using sphinx:
 
 ::
   
-  conda install sphinx
+  conda install sphinx sphinx_rtd_theme
 
 To make the equations LaTeX is needed, and can be installed by:
 
@@ -99,14 +76,9 @@ To make the equations LaTeX is needed, and can be installed by:
   
   sudo apt-get install texlive-full
 
-The theme is downloaded by:
-
-::
-  
-  pip install sphinx_rtd_theme
-
 The documentation is now compiled by:
 
 ::
   
-  sphinx-build data/documentation docs 
+  sphinx-build data/documentation docs
+  

@@ -26,8 +26,8 @@ install:
   
 script:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]];
-    then py.test -vv tests.py --cov .;
-    else py.test -vv tests.py;
+    then py.test -vv tests*.py --cov .;
+    else py.test -vv tests*.py;
     fi
 
 after_success:

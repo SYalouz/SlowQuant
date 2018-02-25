@@ -96,19 +96,20 @@
 <li class="toctree-l1"><a class="reference internal" href="issues.html">Issues</a></li>
 <li class="toctree-l1"><a class="reference internal" href="illustrativecalc.html">Illustrative calculations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Working equations and functions</span></p>
+<p class="caption"><span class="caption-text">Legacy documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="General.html">General Considerations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MolecularIntegral.html">Molecular Integrals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="IntegralTrans.html">Integral Transformations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HFMethods.html">Hartree-Fock methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="DIIS.html">DIIS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MPn.html">Perturbations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Properties.html">Properties</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GeoOpt.html">Geometry optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CI.html">Configuration Interaction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CC.html">Coupled Cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BOMD.html">Ab-Initio Molecular Dynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="legacy_install_example.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="General_legacy.html">General Implementation Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MolecularIntegral_legacy.html">Molecular Integrals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IntegralTrans_legacy.html">Integral Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HFMethods_legacy.html">Hartree-Fock methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DIIS_legacy.html">DIIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MPn_legacy.html">Perturbations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Properties_legacy.html">Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GeoOpt_legacy.html">Geometry optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CI_legacy.html">Configuration Interaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CC_legacy.html">Coupled Cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BOMD_legacy.html">Ab-Initio Molecular Dynamics</a></li>
 </ul>
 
             
@@ -175,11 +176,7 @@
   <div class="section" id="slowquant">
 <h1>SlowQuant<a class="headerlink" href="#slowquant" title="Permalink to this headline">¶</a></h1>
 <p>SlowQuant is a molecular quantum chemistry program written in python. Even the computational demanding parts are written in python, so it lacks speed, thus the name SlowQuant. The program is run as:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">SlowQuant</span><span class="o">.</span><span class="n">py</span> <span class="n">MOLECULE</span> <span class="n">SETTINGS</span>
-</pre></div>
-</div>
-<p>As a ready to run example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">SlowQuant</span><span class="o">.</span><span class="n">py</span> <span class="n">H2O</span><span class="o">.</span><span class="n">csv</span> <span class="n">settingExample</span><span class="o">.</span><span class="n">csv</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SOMETHING</span> <span class="n">IS</span> <span class="n">NEEDED</span> <span class="n">HERE</span>
 </pre></div>
 </div>
 <p>SlowQuant have the following requirements:</p>
@@ -188,8 +185,6 @@
 <li>numpy 1.13.1</li>
 <li>scipy 0.19.1</li>
 <li>numba 0.34.0</li>
-<li>cython 0.25.2</li>
-<li>gcc 5.4.0</li>
 </ul>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">How to use</span></p>
@@ -201,104 +196,90 @@
 <li class="toctree-l2"><a class="reference internal" href="install.html#compiling-documentation">Compiling documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="keywords.html">List of keywords</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#integrals">Integrals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#initial-method">Initial Method</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#scf">SCF</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#perturbation">Perturbation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#properties">Properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#geomoetry-optimization">Geomoetry Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#configuration-interaction">Configuration Interaction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#couple-cluster">Couple Cluster</a></li>
-<li class="toctree-l2"><a class="reference internal" href="keywords.html#ab-inition-molecular-dynamics">Ab-Inition Molecular Dynamics</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Example input files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Examples.html#hartree-fock-calculation">Hartree-Fock calculation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Examples.html#mp2-calculation">MP2 calculation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Examples.html#geometry-optimization">Geometry optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Examples.html#bomd-simulation">BOMD simulation</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="keywords.html">List of keywords</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Example input files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="issues.html">Issues</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="issues.html#general">General</a></li>
-<li class="toctree-l2"><a class="reference internal" href="issues.html#performance">Performance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="issues.html#need-testing">Need testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="issues.html#broken">Broken</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="illustrativecalc.html">Illustrative calculations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="illustrativecalc.html#scf-with-and-without-diis">SCF with and without DIIS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="illustrativecalc.html#hartee-fock-h2-dissociation">Hartee-Fock H2 dissociation</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="illustrativecalc.html">Illustrative calculations</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Working equations and functions</span></p>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Legacy documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="General.html">General Considerations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="General.html#basisset-object">Basisset object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="General.html#inputfile-obejct">Inputfile obejct</a></li>
-<li class="toctree-l2"><a class="reference internal" href="General.html#settings-obejct">Settings obejct</a></li>
-<li class="toctree-l2"><a class="reference internal" href="General.html#results-object">Results object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="legacy_install_example.html">Installation and running</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="legacy_install_example.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="legacy_install_example.html#example-input-files">Example input files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="legacy_install_example.html#list-of-keywords">List of keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="legacy_install_example.html#illustrative-calculations">Illustrative calculations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="legacy_install_example.html#issues">Issues</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="MolecularIntegral.html">Molecular Integrals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#boys-function">Boys Function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#expansion-coefficients">Expansion coefficients</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#hermite-coulomb-integral">Hermite coulomb integral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#overlap">Overlap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#kinetic-energy">Kinetic energy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#electron-nuclear-attraction">Electron-nuclear attraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#electron-nuclear-field">Electron-nuclear field</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#electron-electron-repulsion">Electron-electron repulsion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#nuclear-nuclear-repulsion">Nuclear-nuclear repulsion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#nuclear-nuclear-field">Nuclear-nuclear field</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral.html#dipole-moment-integral">Dipole moment integral</a></li>
+<li class="toctree-l1"><a class="reference internal" href="General_legacy.html">General Implementation Considerations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="General_legacy.html#basisset-object">Basisset object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="General_legacy.html#inputfile-object">Inputfile object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="General_legacy.html#settings-object">Settings object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="General_legacy.html#results-object">Results object</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="IntegralTrans.html">Integral Transformations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="IntegralTrans.html#ao-to-mo-basis-2-electron-integrals">AO to MO basis 2 electron integrals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="IntegralTrans.html#mo-spatial-to-mo-spin-basis-2-electron-integrals">MO spatial to MO spin basis 2 electron integrals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MolecularIntegral_legacy.html">Molecular Integrals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#boys-function">Boys Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#expansion-coefficients">Expansion coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#hermite-coulomb-integral">Hermite coulomb integral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#overlap">Overlap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#kinetic-energy">Kinetic energy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#electron-nuclear-attraction">Electron-nuclear attraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#electron-nuclear-field">Electron-nuclear field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#electron-electron-repulsion">Electron-electron repulsion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#nuclear-nuclear-repulsion">Nuclear-nuclear repulsion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#nuclear-nuclear-field">Nuclear-nuclear field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MolecularIntegral_legacy.html#dipole-moment-integral">Dipole moment integral</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="HFMethods.html">Hartree-Fock methods</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HFMethods.html#restricted-hartree-fock">Restricted Hartree-Fock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HFMethods.html#unrestricted-hartee-fock">Unrestricted Hartee-Fock</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IntegralTrans_legacy.html">Integral Transformations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="IntegralTrans_legacy.html#ao-to-mo-basis-2-electron-integrals">AO to MO basis 2 electron integrals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IntegralTrans_legacy.html#mo-spatial-to-mo-spin-basis-2-electron-integrals">MO spatial to MO spin basis 2 electron integrals</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="DIIS.html">DIIS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MPn.html">Perturbations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MPn.html#moller-plesset-second-order">Møller-Plesset, second order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MPn.html#moller-plesset-third-order">Møller-Plesset, third order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MPn.html#degeneracy-corrected-perturbation-second-order">Degeneracy-corrected perturbation, second order</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HFMethods_legacy.html">Hartree-Fock methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="HFMethods_legacy.html#restricted-hartree-fock">Restricted Hartree-Fock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HFMethods_legacy.html#unrestricted-hartee-fock">Unrestricted Hartee-Fock</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Properties.html">Properties</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Properties.html#molecular-dipole">Molecular dipole</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Properties.html#mulliken-charges">Mulliken charges</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Properties.html#lowdin-charges">Lowdin charges</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Properties.html#random-phase-approximation-excitation-energy">Random-Phase Approximation Excitation energy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DIIS_legacy.html">DIIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MPn_legacy.html">Perturbations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="MPn_legacy.html#moller-plesset-second-order">Møller-Plesset, second order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MPn_legacy.html#moller-plesset-third-order">Møller-Plesset, third order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MPn_legacy.html#degeneracy-corrected-perturbation-second-order">Degeneracy-corrected perturbation, second order</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="GeoOpt.html">Geometry optimization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GeoOpt.html#gradient-descent">Gradient Descent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GeoOpt.html#analytic-hartree-fock">Analytic Hartree-Fock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GeoOpt.html#finite-difference">Finite difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Properties_legacy.html">Properties</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Properties_legacy.html#molecular-dipole">Molecular dipole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Properties_legacy.html#mulliken-charges">Mulliken charges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Properties_legacy.html#lowdin-charges">Lowdin charges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Properties_legacy.html#random-phase-approximation-excitation-energy">Random-Phase Approximation Excitation energy</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="CI.html">Configuration Interaction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="CI.html#ci-singles">CI Singles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GeoOpt_legacy.html">Geometry optimization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GeoOpt_legacy.html#gradient-descent">Gradient Descent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GeoOpt_legacy.html#analytic-hartree-fock">Analytic Hartree-Fock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GeoOpt_legacy.html#finite-difference">Finite difference</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="CC.html">Coupled Cluster</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="CC.html#coupled-cluster-singles-double">Coupled Cluster Singles Double</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CC.html#perturbative-triples-correction">Perturbative Triples Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CI_legacy.html">Configuration Interaction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CI_legacy.html#ci-singles">CI Singles</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="BOMD.html">Ab-Initio Molecular Dynamics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="BOMD.html#velocity-verlet-integrator">Velocity Verlet integrator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CC_legacy.html">Coupled Cluster</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CC_legacy.html#coupled-cluster-singles-double">Coupled Cluster Singles Double</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CC_legacy.html#perturbative-triples-correction">Perturbative Triples Correction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="BOMD_legacy.html">Ab-Initio Molecular Dynamics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="BOMD_legacy.html#velocity-verlet-integrator">Velocity Verlet integrator</a></li>
 </ul>
 </li>
 </ul>

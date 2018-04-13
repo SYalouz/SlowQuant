@@ -6,7 +6,7 @@
 
 ![SlowQuant logo](https://cloud.githubusercontent.com/assets/11976167/26658726/5e125b02-466c-11e7-8790-8412789fc9fb.jpg)
 
-SlowQuant is a molecular quantum chemistry program written in python. Even the computational demanding parts are written in python, so it lacks speed, thus the name SlowQuant.
+SlowQuant is a molecular quantum chemistry program written in Python. Even the computational demanding parts are written in Python, so it lacks speed, thus the name SlowQuant.
 
 Documentation can be found at:
 

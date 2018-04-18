@@ -31,7 +31,7 @@ The SCF procedure is calulated as the following equations. First the fock matrix
 Then the Fock matrix is brought into the orthogonal basis:
 
 .. math::
-   F_{n}^{'}=S_{\mathrm{ortho}}^{T}H^{\mathrm{core}}S_{\mathrm{ortho}}
+   F_{n}^{'}=S_{\mathrm{ortho}}^{T}F_{n-1}S_{\mathrm{ortho}}
 
 The F' is then diagonalized:
 

@@ -92,6 +92,7 @@ def factorial2(n):
 
 @jit(float64[:](float64, float64, float64, float64[:]),nopython=True,cache=True)
 def Normalization(l, m, n, zeta_exp):
+    # CHANGE SO IT CONTAINT SHELLS AND NOT BASISFUNCTIONS.
     """
     Calculates the normalizations coefficients of the basisfunctions.
     """

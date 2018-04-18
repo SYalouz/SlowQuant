@@ -78,7 +78,7 @@ class _Molecule:
         return self._center_of_nuclear_charge
     
     def set_basis_set(self, basisname):
-        self._basis_function_list = []
+        self._basis_shell_list = []
         for i in range(self.get_number_atoms()):
             basisfile = np.genfromtxt(self.this_file_location+"/"+str(basisname)+'.csv', dtype=str, delimiter=',')
             make_bf_check = 0
@@ -108,20 +108,25 @@ class _Molecule:
                                                  np.array(coeffs),
                                                  bf_type)
                     break
+
                                   
     def __append_basis_function(self, xyz, atom_idx, exp, contract_coeffs, bf_type):
         if bf_type == "S":
-            self._basis_function_list.append(basis_function(xyz, atom_idx, exp, contract_coeffs, np.array([0, 0, 0],dtype=int)))
+            self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 0, np.array([self.__current_basis_idx],dtype=int)))
+            self.__current_basis_idx += 1
         elif bf_type == "P":
-            angulars = np.array([[1,0,0],[0,1,0],[0,0,1]],dtype=int)
-            for angular in angulars:
-                self._basis_function_list.append(basis_function(xyz, atom_idx, exp, contract_coeffs, angular))
+            self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 1, np.array([self.__current_basis_idx, 
+                                                                                                           self.__current_basis_idx+1, 
+                                                                                                           self.__current_basis_idx+2],dtype=int)))
+            self.__current_basis_idx += 3
         elif bf_type == "D":
-            angulars = np.array([[2,0,0],[1,1,0],[1,0,1],[0,2,0],[0,1,1],[0,0,2]],dtype=int)
-            for angular in angulars:
-                self._basis_function_list.append(basis_function(xyz, atom_idx, exp, contract_coeffs, angular))
+            self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 2, np.array([self.__current_basis_idx, 
+                                                                                                           self.__current_basis_idx+1,
+                                                                                                           self.__current_basis_idx+2,
+                                                                                                           self.__current_basis_idx+3,
+                                                                                                           self.__current_basis_idx+4],dtype=int)))
+            self.__current_basis_idx += 5
                             
-
     
 class Atom:
     def __init__(self, name, x, y, z, charge, mass):
@@ -133,11 +138,11 @@ class Atom:
         self.atomic_mass = mass
         
         
-class basis_function:
-    def __init__(self, xyz, atom_idx, exp, contract_coeffs, ang_xyz):
+class basis_shells:
+    def __init__(self, xyz, atom_idx, exp, contract_coeffs, ang_xyz, basis_idx):
         self.coord = xyz
         self.atom_idx = atom_idx
         self.exponents = exp
         self.contraction_coeffs = contract_coeffs
         self.angular_moment = ang_xyz
-        self.normalization = Normalization(self.angular_moment[0],self.angular_moment[1],self.angular_moment[2],self.exponents)
+        self.basis_function_idx = basis_idx

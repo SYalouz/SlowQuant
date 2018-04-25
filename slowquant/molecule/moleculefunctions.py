@@ -3,6 +3,9 @@ from numba import jit, float64, int64
 from numba.types import Tuple
 
 def atom_to_numbers(atom_name, number_property):
+    """
+    Function that contains useful conversions.
+    """
     name2number = {"H": 1, "He": 2, "Li": 3, "Be": 4, "B": 5, "C": 6, "N": 7, "O": 8, "F": 9, "Ne": 10, "Na": 11, "Mg": 12, "Al": 13, "Si": 14, "P": 15, "S": 16,
             "Cl": 17, "Ar": 18, "K": 19, "Ca": 20, "Sc": 21, "Ti": 22, "V": 23, "Cr": 24, "Mn": 25, "Fe": 26, "Co": 27, "Ni": 28, "Cu": 29, "Zn": 30, "Ga": 31,
             "Ge": 32, "As": 33, "Se": 34, "Br": 35, "Kr": 36, "Rb": 37, "Sr": 38, "Y": 39, "Zr": 40, "Nb": 41, "Mo": 42, "Tc": 43, "Ru": 44, "Rh": 45, "Pd": 46,
@@ -54,6 +57,11 @@ def atom_to_numbers(atom_name, number_property):
 
 @jit(float64[:,:](float64[:,:]),nopython=True,cache=True)
 def calc_distance_matrix(xyz):
+    """
+    Calculates the distance matrix.
+    
+    Input : x,y,z coordinate matrix(n, 3)
+    """
     distance_matrix = np.zeros((len(xyz),len(xyz)))
     for i in range(0, len(xyz)):
         for j in range(i, len(xyz)):
@@ -63,6 +71,12 @@ def calc_distance_matrix(xyz):
 
 @jit(float64[:](float64[:],float64[:,:]),nopython=True,cache=True)
 def calc_center_of_mass(mass, xyz):
+    """
+    Calculates the center of mass.
+    
+    Input : Vector with masses
+          : x,y,z coordinate matrix(n, 3)
+    """
     Xcm = np.sum(mass*xyz[:,0])/np.sum(mass)
     Ycm = np.sum(mass*xyz[:,1])/np.sum(mass)
     Zcm = np.sum(mass*xyz[:,2])/np.sum(mass)
@@ -71,39 +85,14 @@ def calc_center_of_mass(mass, xyz):
     
 @jit(float64[:](float64[:],float64[:,:]),nopython=True,cache=True)
 def calc_center_of_nuclear_charge(charge, xyz):
+    """
+    Calculates the center of nuclear charges.
+    
+    Input : Vector with nuclear charges.
+          : x,y,z coordinate matrix(n, 3)
+    """
     Xcm = np.sum(charge*xyz[:,0])/np.sum(charge)
     Ycm = np.sum(charge*xyz[:,1])/np.sum(charge)
     Zcm = np.sum(charge*xyz[:,2])/np.sum(charge)
     return np.array([Xcm, Xcm, Zcm])
 
-
-@jit(float64(float64),nopython=True,cache=True)
-def factorial2(n):
-    """
-    Calculate the factorial2 of an integer.
-    """
-    n_range = int(n)
-    out = 1.0
-    if n > 0:
-        for i in range(0, int(n_range+1)//2):
-            out = out*(n-2*i)
-    return out
-
-
-@jit(float64[:](float64, float64, float64, float64[:]),nopython=True,cache=True)
-def Normalization(l, m, n, zeta_exp):
-    # CHANGE SO IT CONTAINT SHELLS AND NOT BASISFUNCTIONS.
-    """
-    Calculates the normalizations coefficients of the basisfunctions.
-    """
-    N = np.zeros(len(zeta_exp))
-    pi = 3.141592653589793238462643383279
-    # Normalize primitive functions
-    for i in range(len(zeta_exp)):
-        c = zeta_exp[i]
-
-        part1 = (2.0/pi)**(3.0/4.0)
-        part2 = 2.0**(l+m+n) * c**((2.0*l+2.0*m+2.0*n+3.0)/(4.0))
-        part3 = (factorial2(int(2*l-1))*factorial2(int(2*m-1))*factorial2(int(2*n-1)))**0.5
-        N[i] = part1 * ((part2)/(part3))
-    return N

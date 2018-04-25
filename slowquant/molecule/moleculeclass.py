@@ -4,7 +4,10 @@ from slowquant.molecule.moleculefunctions import atom_to_numbers, calc_distance_
 
 class _Molecule:
     """
-    Molecule class
+    Molecule class.
+    
+    Input : molecule_file, can only be xyz format.
+    Optional input : unit {bohr, angstrom(Default)}
     """
     def __init__(self, molecule_file, unit="angstrom"):
         if unit.lower() == "angstrom":
@@ -78,9 +81,10 @@ class _Molecule:
         return self._center_of_nuclear_charge
     
     def set_basis_set(self, basisname):
+        self.__current_basis_idx = 0
         self._basis_shell_list = []
         for i in range(self.get_number_atoms()):
-            basisfile = np.genfromtxt(self.this_file_location+"/"+str(basisname)+'.csv', dtype=str, delimiter=',')
+            basisfile = np.genfromtxt(self.this_file_location+"/basissets/"+str(basisname)+'.csv', dtype=str, delimiter=';')
             make_bf_check = 0
             exp = []
             for line in basisfile:
@@ -111,20 +115,23 @@ class _Molecule:
 
                                   
     def __append_basis_function(self, xyz, atom_idx, exp, contract_coeffs, bf_type):
+        """
+        Function to append new basis function shell the list of basis function shell objects.
+        """
         if bf_type == "S":
             self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 0, np.array([self.__current_basis_idx],dtype=int)))
             self.__current_basis_idx += 1
         elif bf_type == "P":
             self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 1, np.array([self.__current_basis_idx, 
-                                                                                                           self.__current_basis_idx+1, 
-                                                                                                           self.__current_basis_idx+2],dtype=int)))
+                                                                                                         self.__current_basis_idx+1, 
+                                                                                                         self.__current_basis_idx+2],dtype=int)))
             self.__current_basis_idx += 3
         elif bf_type == "D":
             self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 2, np.array([self.__current_basis_idx, 
-                                                                                                           self.__current_basis_idx+1,
-                                                                                                           self.__current_basis_idx+2,
-                                                                                                           self.__current_basis_idx+3,
-                                                                                                           self.__current_basis_idx+4],dtype=int)))
+                                                                                                         self.__current_basis_idx+1,
+                                                                                                         self.__current_basis_idx+2,
+                                                                                                         self.__current_basis_idx+3,
+                                                                                                         self.__current_basis_idx+4],dtype=int)))
             self.__current_basis_idx += 5
                             
     

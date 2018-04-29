@@ -1,6 +1,5 @@
 import numpy as np
 from numba import jit, float64, int64
-from numba.types import Tuple
 
 
 @jit(float64(float64),nopython=True,cache=True)
@@ -11,6 +10,20 @@ def factorial2(n):
         for i in range(0, int(n_range+1)//2):
             out = out*(n-2*i)
     return out
+    
+
+@jit(float64(float64, float64, float64, float64),nopython=True,cache=True)
+def Normalization(l, m, n, c):
+    """
+    Calculates the normalizations coefficients of the basisfunctions.
+    """
+    pi = 3.141592653589793238462643383279
+    # Normalize primitive functions
+    part1 = (2.0/pi)**(3.0/4.0)
+    part2 = 2.0**(l+m+n) * c**((2.0*l+2.0*m+2.0*n+3.0)/(4.0))
+    part3 = (factorial2(int(2*l-1))*factorial2(int(2*m-1))*factorial2(int(2*n-1)))**0.5
+    N = part1 * ((part2)/(part3))
+    return N
 
 
 @jit(float64(float64,float64),nopython=True,cache=True)
@@ -35,21 +48,6 @@ def boys_function(m,z):
         F *= np.exp(-z)
     return F
     
-    
-@jit(float64(int64,int64,int64,float64,float64,float64,float64,float64,float64),nopython=True,cache=True)
-def Expansion_coefficients(i, j, t, Qx, a, b, XPA, XPB, XAB):
-    #McMurchie-Davidson scheme, 9.5.6 and 9.5.7 Helgaker
-    p = a + b
-    q = a*b/p
-    if (t < 0) or (t > (i + j)):
-        return 0.0
-    elif i == j == t == 0:
-        return np.exp(-q*Qx*Qx)
-    elif j == 0:
-        return (1.0/(2.0*p))*E(i-1,j,t-1,Qx,a,b,XPA,XPB,XAB) + XPA*E(i-1,j,t,Qx,a,b,XPA,XPB,XAB) + (t+1.0)*E(i-1,j,t+1,Qx,a,b,XPA,XPB,XAB)
-    else:
-        return (1.0/(2.0*p))*E(i,j-1,t-1,Qx,a,b,XPA,XPB,XAB) + XPB*E(i,j-1,t,Qx,a,b,XPA,XPB,XAB) + (t+1.0)*E(i,j-1,t+1,Qx,a,b,XPA,XPB,XAB)
-        
 
 @jit(float64(float64[:,:]),nopython=True,cache=True)
 def nuclear_nuclear_repulsion(molecule):
@@ -60,3 +58,8 @@ def nuclear_nuclear_repulsion(molecule):
             if i < j:
                 Vnn += (molecule[i,0]*molecule[j,0])/(((molecule[i,1]-molecule[j,1])**2+(molecule[i,2]-molecule[j,2])**2+(molecule[i,3]-molecule[j,3])**2))**0.5
     return Vnn
+
+    
+@jit(nopython=True,cache=True)
+def transform_to_spherical():
+    None

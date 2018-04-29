@@ -6,8 +6,8 @@ from slowquant.molecularintegrals.overlap import *
 class _Integrals:
     def __init__(self, molecule_object):
         self.molecule_obj = molecule_object
-        self._output_buffer = np.zeros((6)) # Up to p functions
-        self._primitives_buffer = np.zeros((10,10,6)) # Up to p functions, and up to 10 primitives
+        self._output_buffer = np.zeros((9)) # Up to p functions
+        self._primitives_buffer = np.zeros((10,10,9)) # Up to p functions, and up to 10 primitives
         self._Contraction_1_buffer = np.zeros(10) # Up to 10 primitives
         self._Contraction_2_buffer = np.zeros(10) # Up to 10 primitives
         
@@ -39,7 +39,7 @@ class _Integrals:
     def Electron_electron_repulsion_integral(self, shell1, shell2, shell3, shell4):
         None
         
-    def Nuclear_nuclear_repulsin(self):
+    def Nuclear_nuclear_repulsion(self):
         None
         
     def Multipole_moment_integral(self, shell1, shell2):
@@ -55,7 +55,7 @@ class _Integrals:
         idx_2 = self.molecule_obj._basis_shell_list[shell_number_2].basis_function_idx
         if angular_moment_1 == 0:
             output = [[idx_1[0], idx_2[0]]]
-        elif angular_moment_1 == 1 and :
+        elif angular_moment_1 == 1:
             if angular_moment_2 == 0:
                 output = [[idx_1[0], idx_2[0]],
                           [idx_1[1], idx_2[0]],
@@ -64,8 +64,11 @@ class _Integrals:
                 output = [[idx_1[0], idx_2[0]],
                           [idx_1[0], idx_2[1]],
                           [idx_1[0], idx_2[2]],
+                          [idx_1[1], idx_2[0]],
                           [idx_1[1], idx_2[1]],
                           [idx_1[1], idx_2[2]],
+                          [idx_1[2], idx_2[0]],
+                          [idx_1[2], idx_2[1]],
                           [idx_1[2], idx_2[2]]]
         return output
         
@@ -75,6 +78,9 @@ class _Integrals:
             for j in range(i, self.molecule_obj.get_number_shells()):
                 temp = self.Overlap_integral(i, j)
                 idx = self.get_idx_list_one_electron(i, j)
+                print(temp)
+                print(idx)
+                print(" ")
                 for k in range(0, len(idx)):
                     Overlap_matrix[idx[k][0],idx[k][1]] = Overlap_matrix[idx[k][1],idx[k][0]] = temp[k]
         return Overlap_matrix

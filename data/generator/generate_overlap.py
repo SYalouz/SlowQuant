@@ -1,5 +1,6 @@
 import numpy
 
+
 def E(i, j, t):
     #McMurchie-Davidson scheme, 9.5.6 and 9.5.7 Helgaker
     output = "E_"+str(i)+"_"+str(j)+"_"+str(t)+" = "
@@ -71,10 +72,6 @@ def E(i, j, t):
     else:
         return 0.0
         
-        
-def R():
-    return 0.0
-        
 
 def write_overlap(max_angular):
     S_file = open("../../slowquant/molecularintegrals/overlap.py", "w+")
@@ -87,7 +84,9 @@ def write_overlap(max_angular):
             if la >= lb:
                 global steps
                 steps = []
-                E(la, lb, 0)
+                for i in range(la, -1, -1):
+                    for j in range(lb, -1, -1):
+                        E(i, j, 0)
                 unique_steps = []
                 for i in range(-1, -len(steps)-1, -1):
                     if steps[i] not in unique_steps:
@@ -113,10 +112,13 @@ def write_overlap(max_angular):
                     S_file.write("                     (pi/p)**(3/2) * E_0_0_0[0] * E_0_0_0[1] * E_1_0_0[2]])\n")
                 elif la == 1 and lb == 1:
                     S_file.write("    return np.array([(pi/p)**(3/2) * E_1_1_0[0] * E_0_0_0[1] * E_0_0_0[2],\n")
-                    S_file.write("                     (pi/p)**(3/2) * E_1_0_0[0] * E_1_0_0[1] * E_0_0_0[2],\n")
-                    S_file.write("                     (pi/p)**(3/2) * E_1_0_0[0] * E_0_0_0[1] * E_1_0_0[2],\n")
+                    S_file.write("                     (pi/p)**(3/2) * E_1_0_0[0] * E_0_1_0[1] * E_0_0_0[2],\n")
+                    S_file.write("                     (pi/p)**(3/2) * E_1_0_0[0] * E_0_0_0[1] * E_0_1_0[2],\n")
+                    S_file.write("                     (pi/p)**(3/2) * E_0_1_0[0] * E_1_0_0[1] * E_0_1_0[2],\n")
                     S_file.write("                     (pi/p)**(3/2) * E_0_0_0[0] * E_1_1_0[1] * E_0_0_0[2],\n")
-                    S_file.write("                     (pi/p)**(3/2) * E_0_0_0[0] * E_1_0_0[1] * E_1_0_0[2],\n")
+                    S_file.write("                     (pi/p)**(3/2) * E_0_0_0[0] * E_1_0_0[1] * E_0_1_0[2],\n")
+                    S_file.write("                     (pi/p)**(3/2) * E_0_1_0[0] * E_0_0_0[1] * E_1_0_0[2],\n")
+                    S_file.write("                     (pi/p)**(3/2) * E_0_0_0[0] * E_0_1_0[1] * E_1_0_0[2],\n")
                     S_file.write("                     (pi/p)**(3/2) * E_0_0_0[0] * E_0_0_0[1] * E_1_1_0[2]])\n")
                 else:
                     S_file.write("    return None\n")
@@ -127,10 +129,15 @@ def write_overlap(max_angular):
             if la >= lb:
                 S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:], float64[:], float64[:]), nopython=True, cache=True)\n")
                 S_file.write("def overlap_integral_"+str(la)+"_"+str(lb)+"(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, output_buffer, primitives_buffer, Contraction_1_buffer, Contraction_2_buffer):\n")
+                S_file.write("    number_primitive_1 = len(gauss_exp_1)\n")
+                S_file.write("    number_primitive_2 = len(gauss_exp_2)\n")
+                S_file.write("    Contraction_1_buffer = Contraction_1_buffer[:number_primitive_1]\n")
+                S_file.write("    Contraction_2_buffer = Contraction_2_buffer[:number_primitive_2]\n")
                 if la == 0:
+                    S_file.write("    primitives_buffer = primitives_buffer[:number_primitive_1,:number_primitive_2,:1]\n")
                     S_file.write("    for i in range(0, len(gauss_exp_1)):\n")
                     S_file.write("        for j in range(0, len(gauss_exp_2)):\n")
-                    S_file.write("            primitives_buffer[i,j,:1] = primitive_overlap_0_0(Coord_1, Coord_2, gauss_exp_1[i], gauss_exp_2[j])\n")
+                    S_file.write("            primitives_buffer[i,j,:] = primitive_overlap_0_0(Coord_1, Coord_2, gauss_exp_1[i], gauss_exp_2[j])\n")
                     S_file.write("    for i in range(0, len(Contra_coeffs_1)):\n")
                     S_file.write("        Contraction_1_buffer[i] = Normalization(0.0,0.0,0.0,gauss_exp_1[i]) * Contra_coeffs_1[i]\n")
                     S_file.write("    for i in range(0, len(Contra_coeffs_2)):\n")
@@ -140,9 +147,10 @@ def write_overlap(max_angular):
                     S_file.write("    return output_buffer\n")
                     S_file.write("\n\n")
                 elif la == 1 and lb == 0:
+                    S_file.write("    primitives_buffer = primitives_buffer[:number_primitive_1,:number_primitive_2,:3]\n")
                     S_file.write("    for i in range(0, len(gauss_exp_1)):\n")
                     S_file.write("        for j in range(0, len(gauss_exp_2)):\n")
-                    S_file.write("            primitives_buffer[i,j,:3] = primitive_overlap_1_0(Coord_1, Coord_2, gauss_exp_1[i], gauss_exp_2[j])\n")
+                    S_file.write("            primitives_buffer[i,j,:] = primitive_overlap_1_0(Coord_1, Coord_2, gauss_exp_1[i], gauss_exp_2[j])\n")
                     S_file.write("    for i in range(0, len(Contra_coeffs_1)):\n")
                     S_file.write("        Contraction_1_buffer[i] = Normalization(1.0,0.0,0.0,gauss_exp_1[i]) * Contra_coeffs_1[i]\n")
                     S_file.write("    for i in range(0, len(Contra_coeffs_2)):\n")
@@ -156,9 +164,10 @@ def write_overlap(max_angular):
                     S_file.write("    return output_buffer\n")
                     S_file.write("\n\n")
                 elif la == 1 and lb == 1:
+                    S_file.write("    primitives_buffer = primitives_buffer[:number_primitive_1,:number_primitive_2,:9]\n")
                     S_file.write("    for i in range(0, len(gauss_exp_1)):\n")
                     S_file.write("        for j in range(0, len(gauss_exp_2)):\n")
-                    S_file.write("            primitives_buffer[i,j,:6] = primitive_overlap_1_1(Coord_1, Coord_2, gauss_exp_1[i], gauss_exp_2[j])\n")
+                    S_file.write("            primitives_buffer[i,j,:] = primitive_overlap_1_1(Coord_1, Coord_2, gauss_exp_1[i], gauss_exp_2[j])\n")
                     S_file.write("    for i in range(0, len(Contra_coeffs_1)):\n")
                     S_file.write("        Contraction_1_buffer[i] = Normalization(1.0,0.0,0.0,gauss_exp_1[i]) * Contra_coeffs_1[i]\n")
                     S_file.write("    for i in range(0, len(Contra_coeffs_2)):\n")
@@ -175,6 +184,12 @@ def write_overlap(max_angular):
                     S_file.write("    output_buffer[4] = np.dot(temp, Contraction_2_buffer)\n")
                     S_file.write("    temp = np.dot(Contraction_1_buffer, primitives_buffer[:,:,5])\n")
                     S_file.write("    output_buffer[5] = np.dot(temp, Contraction_2_buffer)\n")
+                    S_file.write("    temp = np.dot(Contraction_1_buffer, primitives_buffer[:,:,6])\n")
+                    S_file.write("    output_buffer[6] = np.dot(temp, Contraction_2_buffer)\n")
+                    S_file.write("    temp = np.dot(Contraction_1_buffer, primitives_buffer[:,:,7])\n")
+                    S_file.write("    output_buffer[7] = np.dot(temp, Contraction_2_buffer)\n")
+                    S_file.write("    temp = np.dot(Contraction_1_buffer, primitives_buffer[:,:,8])\n")
+                    S_file.write("    output_buffer[8] = np.dot(temp, Contraction_2_buffer)\n")
                     S_file.write("    return output_buffer\n")
                     S_file.write("\n\n")
                 elif la == 2 and lb == 0:
@@ -183,8 +198,6 @@ def write_overlap(max_angular):
                     S_file.write("    return None\n")
                 elif la == 2 and lb == 2:
                     S_file.write("    return None\n")
-                
-    
     S_file.close()
             
 

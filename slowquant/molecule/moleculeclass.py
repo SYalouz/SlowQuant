@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from slowquant.molecule.moleculefunctions import atom_to_numbers, calc_distance_matrix, calc_center_of_mass, calc_center_of_nuclear_charge, factorial2, Normalization
+from slowquant.molecule.moleculefunctions import atom_to_numbers, calc_distance_matrix, calc_center_of_mass, calc_center_of_nuclear_charge
 
 class _Molecule:
     """
@@ -112,7 +112,12 @@ class _Molecule:
                                                  np.array(coeffs),
                                                  bf_type)
                     break
-
+                    
+    def get_number_basis_function(self):
+        return self.__current_basis_idx # Is set when setting the basisset
+        
+    def get_number_shells(self):
+        return len(self._basis_shell_list)
                                   
     def __append_basis_function(self, xyz, atom_idx, exp, contract_coeffs, bf_type):
         """

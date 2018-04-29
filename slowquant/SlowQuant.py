@@ -1,6 +1,6 @@
 import numpy as np
 from slowquant.molecule.moleculeclass import _Molecule
-
+from slowquant.molecularintegrals.integralclass import _Integrals
 
 class SlowQuant:
     """
@@ -27,4 +27,5 @@ class SlowQuant:
         self.Molecule = _Molecule(molecule_file, unit=set_unit)
         
     def initialize_integrals(self):
+        self.Integrals = _Integrals(self.Molecule)
         

@@ -57,6 +57,15 @@ class _Molecule:
                              self.get_atom_coord(i)[1], 
                              self.get_atom_coord(i)[2]])
         return molecule
+        
+    def get_molecule_charge_xyz(self):
+        molecule = []
+        for i in range(self.get_number_atoms()):
+            molecule.append([self.get_atom_charge(i), 
+                             self.get_atom_coord(i)[0], 
+                             self.get_atom_coord(i)[1], 
+                             self.get_atom_coord(i)[2]])
+        return np.array(molecule, dtype=float)
     
     def get_distance_matrix(self):
         xyz = np.array(self.get_molecule())

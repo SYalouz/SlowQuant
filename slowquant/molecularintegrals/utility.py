@@ -38,7 +38,7 @@ def boys_function(m,z):
     else:
         F = 0.0
         temp1 = factorial2(2*m-1)
-        threshold = 10**-12 # 10**-10 from purple book, but might not be in this context
+        threshold = 10**-12
         for i in range(0, 1000):
             Fcheck = F
             F += (temp1*(2*z)**i)/(factorial2(2*m+2*i+1))

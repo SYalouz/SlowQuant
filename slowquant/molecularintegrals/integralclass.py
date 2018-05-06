@@ -1,6 +1,7 @@
 import numpy as np
 from numba import jit, float64, int64
 from slowquant.molecularintegrals.overlap import *
+from slowquant.molecularintegrals.nuclear_electron_potential import *
 
 
 class _Integrals:
@@ -10,6 +11,9 @@ class _Integrals:
         self._primitives_buffer = np.zeros((10,10,9)) # Up to p functions, and up to 10 primitives
         self._Contraction_1_buffer = np.zeros(10) # Up to 10 primitives
         self._Contraction_2_buffer = np.zeros(10) # Up to 10 primitives
+        self._primitives_buffer_2 = np.zeros(9) # Up to p functions
+        self._E_buffer = np.zeros((3,3,3,3)) # Up to p functions
+        self._R_buffer = np.zeros((5,5,5,5)) # Up to p functions
         
     def Overlap_integral(self, shell_number_1, shell_number_2):
         angular_moment_1 = self.molecule_obj._basis_shell_list[shell_number_1].angular_moment
@@ -33,8 +37,24 @@ class _Integrals:
     def Kinetic_energy_integral(self, shell1, shell2):
         None
         
-    def Nuclear_electron_attraction_integral(self, shell1, shell2):
-        None
+    def Nuclear_electron_attraction_integral(self, shell_number_1, shell_number_2):
+        angular_moment_1 = self.molecule_obj._basis_shell_list[shell_number_1].angular_moment
+        angular_moment_2 = self.molecule_obj._basis_shell_list[shell_number_2].angular_moment
+        if angular_moment_1 < angular_moment_2:
+            shell_number_1, shell_number_2 = shell_number_2, shell_number_1
+            angular_moment_1, angular_moment_2 = angular_moment_2, angular_moment_1
+        Coord_1 = self.molecule_obj._basis_shell_list[shell_number_1].coord
+        Coord_2 = self.molecule_obj._basis_shell_list[shell_number_2].coord
+        gauss_exp_1 = self.molecule_obj._basis_shell_list[shell_number_1].exponents
+        gauss_exp_2 = self.molecule_obj._basis_shell_list[shell_number_2].exponents
+        Contra_coeffs_1 = self.molecule_obj._basis_shell_list[shell_number_1].contraction_coeffs
+        Contra_coeffs_2 = self.molecule_obj._basis_shell_list[shell_number_2].contraction_coeffs
+        if angular_moment_1 == 0 and angular_moment_2 == 0:
+            return nuclear_electron_integral_0_0(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._Contraction_1_buffer, self._Contraction_2_buffer, self.molecule_obj.get_molecule_charge_xyz(), self._E_buffer, self._R_buffer, self._primitives_buffer_2[:1])
+        elif angular_moment_1 == 1 and angular_moment_2 == 0:
+            return nuclear_electron_integral_1_0(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._Contraction_1_buffer, self._Contraction_2_buffer, self.molecule_obj.get_molecule_charge_xyz(), self._E_buffer, self._R_buffer, self._primitives_buffer_2[:3])
+        elif angular_moment_1 == 1 and angular_moment_2 == 1:
+            return nuclear_electron_integral_1_1(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._Contraction_1_buffer, self._Contraction_2_buffer, self.molecule_obj.get_molecule_charge_xyz(), self._E_buffer, self._R_buffer, self._primitives_buffer_2[:9])
         
     def Electron_electron_repulsion_integral(self, shell1, shell2, shell3, shell4):
         None
@@ -78,12 +98,19 @@ class _Integrals:
             for j in range(i, self.molecule_obj.get_number_shells()):
                 temp = self.Overlap_integral(i, j)
                 idx = self.get_idx_list_one_electron(i, j)
-                print(temp)
-                print(idx)
-                print(" ")
                 for k in range(0, len(idx)):
                     Overlap_matrix[idx[k][0],idx[k][1]] = Overlap_matrix[idx[k][1],idx[k][0]] = temp[k]
         return Overlap_matrix
+        
+    def get_Nuclear_electron_matrix(self):
+        Nuclear_electron_matrix = np.zeros((self.molecule_obj.get_number_basis_function(), self.molecule_obj.get_number_basis_function()))
+        for i in range(0, self.molecule_obj.get_number_shells()):
+            for j in range(i, self.molecule_obj.get_number_shells()):
+                temp = self.Nuclear_electron_attraction_integral(i, j)
+                idx = self.get_idx_list_one_electron(i, j)
+                for k in range(0, len(idx)):
+                    Nuclear_electron_matrix[idx[k][0],idx[k][1]] = Nuclear_electron_matrix[idx[k][1],idx[k][0]] = temp[k]
+        return Nuclear_electron_matrix
 
 
 

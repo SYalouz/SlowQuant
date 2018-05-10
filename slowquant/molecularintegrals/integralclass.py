@@ -3,6 +3,7 @@ from numba import jit, float64, int64
 from slowquant.molecularintegrals.overlap import *
 from slowquant.molecularintegrals.nuclear_electron_potential import *
 from slowquant.molecularintegrals.electron_electron import *
+from slowquant.molecularintegrals.utility import put_in_array_ERI, make_idx_list_two_electron
 
 
 class _Integrals:
@@ -19,6 +20,7 @@ class _Integrals:
         self._E_buffer = np.zeros((3,3,3,3)) # Up to p functions
         self._E_buffer_2 = np.zeros((3,3,3,3)) # Up to p functions
         self._R_buffer = np.zeros((5,5,5,5)) # Up to p functions
+        self._idx_buffer = np.zeros((81,4),dtype=int) # Up to p functions
         
     def Overlap_integral(self, shell_number_1, shell_number_2):
         angular_moment_1 = self.molecule_obj._basis_shell_list[shell_number_1].angular_moment
@@ -103,7 +105,6 @@ class _Integrals:
     def Nuclear_nuclear_repulsion(self):
         None
         
-        
     def get_idx_list_one_electron(self, shell_number_1, shell_number_2):
         angular_moment_1 = self.molecule_obj._basis_shell_list[shell_number_1].angular_moment
         angular_moment_2 = self.molecule_obj._basis_shell_list[shell_number_2].angular_moment
@@ -132,31 +133,16 @@ class _Integrals:
         return output
         
     def get_idx_list_two_electron(self, shell_number_1, shell_number_2, shell_number_3, shell_number_4):
-        angular_moment_1 = self.molecule_obj._basis_shell_list[shell_number_1].angular_moment
-        angular_moment_2 = self.molecule_obj._basis_shell_list[shell_number_2].angular_moment
-        angular_moment_3 = self.molecule_obj._basis_shell_list[shell_number_3].angular_moment
-        angular_moment_4 = self.molecule_obj._basis_shell_list[shell_number_4].angular_moment
-        if angular_moment_1 < angular_moment_2:
-            shell_number_1, shell_number_2 = shell_number_2, shell_number_1
-            angular_moment_1, angular_moment_2 = angular_moment_2, angular_moment_1
-        if angular_moment_3 < angular_moment_4:
-            shell_number_3, shell_number_4 = shell_number_4, shell_number_3
-            angular_moment_3, angular_moment_4 = angular_moment_4, angular_moment_3
-        if angular_moment_1*(angular_moment_1+1)//2+angular_moment_2 < angular_moment_3*(angular_moment_3+1)//2+angular_moment_4:
-            shell_number_1, shell_number_2, shell_number_3, shell_number_4 = shell_number_3, shell_number_4, shell_number_1, shell_number_2
-            angular_moment_1, angular_moment_2, angular_moment_3, angular_moment_4 = angular_moment_3, angular_moment_4, angular_moment_1, angular_moment_2
-        idx_1 = self.molecule_obj._basis_shell_list[shell_number_1].basis_function_idx
-        idx_2 = self.molecule_obj._basis_shell_list[shell_number_2].basis_function_idx
-        idx_3 = self.molecule_obj._basis_shell_list[shell_number_3].basis_function_idx
-        idx_4 = self.molecule_obj._basis_shell_list[shell_number_4].basis_function_idx
-        output = []
-        for i in range(0, len(idx_1)):
-            for j in range(0, len(idx_2)):
-                for k in range(0, len(idx_3)):
-                    for l in range(0, len(idx_4)):
-                        output.append([idx_1[i],idx_2[j],idx_3[k],idx_4[l]])
-        return output
+        return make_idx_list_two_electron(self.molecule_obj._basis_shell_list[shell_number_1].basis_function_idx, self.molecule_obj._basis_shell_list[shell_number_2].basis_function_idx, self.molecule_obj._basis_shell_list[shell_number_3].basis_function_idx, self.molecule_obj._basis_shell_list[shell_number_4].basis_function_idx,self._idx_buffer)
         
+    def generate_shell_number_two_electron(self):
+        for i in range(0, self.molecule_obj.get_number_shells()):
+            for j in range(i, self.molecule_obj.get_number_shells()):
+                for k in range(0, self.molecule_obj.get_number_shells()):
+                    for l in range(k, self.molecule_obj.get_number_shells()):
+                        if i*(i+1)//2+j >= k*(k+1)//2+l:
+                            yield i, j, k, l
+
     def get_Overlap_matrix(self):
         Overlap_matrix = np.zeros((self.molecule_obj.get_number_basis_function(), self.molecule_obj.get_number_basis_function()))
         for i in range(0, self.molecule_obj.get_number_shells()):
@@ -185,10 +171,9 @@ class _Integrals:
                     for l in range(k, self.molecule_obj.get_number_shells()):
                         if i*(i+1)//2+j >= k*(k+1)//2+l:
                             temp = self.Electron_electron_repulsion_integral(i,j,k,l)
-                            idx = self.get_idx_list_two_electron(i,j,k,l)
-                            for m in range(0, len(idx)):
-                                Electron_electron_matrix[idx[m][0],idx[m][1],idx[m][2],idx[m][3]] = Electron_electron_matrix[idx[m][1],idx[m][0],idx[m][2],idx[m][3]] = Electron_electron_matrix[idx[m][0],idx[m][1],idx[m][3],idx[m][2]] =Electron_electron_matrix[idx[m][1],idx[m][0],idx[m][3],idx[m][2]] = Electron_electron_matrix[idx[m][2],idx[m][3],idx[m][1],idx[m][0]] = Electron_electron_matrix[idx[m][2],idx[m][3],idx[m][0],idx[m][1]] = Electron_electron_matrix[idx[m][3],idx[m][2],idx[m][1],idx[m][0]] = Electron_electron_matrix[idx[m][3],idx[m][2],idx[m][0],idx[m][1]] = temp[m]
+                            Electron_electron_matrix = put_in_array_ERI(self.molecule_obj._basis_shell_list[i].basis_function_idx, self.molecule_obj._basis_shell_list[j].basis_function_idx, self.molecule_obj._basis_shell_list[k].basis_function_idx, self.molecule_obj._basis_shell_list[l].basis_function_idx,Electron_electron_matrix,temp)
         return Electron_electron_matrix
+
 
 
 

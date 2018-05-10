@@ -89,4 +89,58 @@ def ERI_contraction(c1, c2, c3, c4, primitives):
                     output += c1[i]*c2[j]*c3[k]*c4[l]*primitives[i,j,k,l]
     return output
     
+
+@jit(float64[:,:,:,:](int64[:],int64[:],int64[:],int64[:],float64[:,:,:,:], float64[:]),nopython=True,cache=True)
+def put_in_array_ERI(idx_list_1, idx_list_2, idx_list_3, idx_list_4, ERI, new_values):
+    # Not actual angular_moment
+    angular_moment_1 = len(idx_list_1)
+    angular_moment_2 = len(idx_list_2)
+    angular_moment_3 = len(idx_list_3)
+    angular_moment_4 = len(idx_list_4)
+    if angular_moment_1 < angular_moment_2:
+        angular_moment_1, angular_moment_2 = angular_moment_2, angular_moment_1
+        idx_list_1, idx_list_2 = idx_list_2, idx_list_1
+    if angular_moment_3 < angular_moment_4:
+        angular_moment_3, angular_moment_4 = angular_moment_4, angular_moment_3
+        idx_list_3, idx_list_4 = idx_list_3, idx_list_4
+    if angular_moment_1*(angular_moment_1+1)//2+angular_moment_2 < angular_moment_3*(angular_moment_3+1)//2+angular_moment_4:
+        angular_moment_1, angular_moment_2, angular_moment_3, angular_moment_4 = angular_moment_3, angular_moment_4, angular_moment_1, angular_moment_2
+        idx_list_1, idx_list_2, idx_list_3, idx_list_4 = idx_list_3, idx_list_4, idx_list_1, idx_list_2
+    counter = 0
+    for i in idx_list_1:
+        for j in idx_list_2:
+            for k in idx_list_3:
+                for l in idx_list_4:
+                    ERI[i,j,k,l] = ERI[j,i,k,l] = ERI[i,j,l,k] = ERI[j,i,l,k] = ERI[k,l,i,j] = ERI[k,l,j,i] = ERI[l,k,i,j] = ERI[l,k,j,i] = new_values[counter]
+                    counter += 1
+    return ERI
+    
+    
+@jit(int64[:,:](int64[:],int64[:],int64[:],int64[:],int64[:,:]),nopython=True,cache=True)
+def make_idx_list_two_electron(idx_list_1, idx_list_2, idx_list_3, idx_list_4, idx_array):
+    # Not actual angular_moment
+    angular_moment_1 = len(idx_list_1)
+    angular_moment_2 = len(idx_list_2)
+    angular_moment_3 = len(idx_list_3)
+    angular_moment_4 = len(idx_list_4)
+    if angular_moment_1 < angular_moment_2:
+        angular_moment_1, angular_moment_2 = angular_moment_2, angular_moment_1
+        idx_list_1, idx_list_2 = idx_list_2, idx_list_1
+    if angular_moment_3 < angular_moment_4:
+        angular_moment_3, angular_moment_4 = angular_moment_4, angular_moment_3
+        idx_list_3, idx_list_4 = idx_list_3, idx_list_4
+    if angular_moment_1*(angular_moment_1+1)//2+angular_moment_2 < angular_moment_3*(angular_moment_3+1)//2+angular_moment_4:
+        angular_moment_1, angular_moment_2, angular_moment_3, angular_moment_4 = angular_moment_3, angular_moment_4, angular_moment_1, angular_moment_2
+        idx_list_1, idx_list_2, idx_list_3, idx_list_4 = idx_list_3, idx_list_4, idx_list_1, idx_list_2
+    counter = 0
+    for i in idx_list_1:
+        for j in idx_list_2:
+            for k in idx_list_3:
+                for l in idx_list_4:
+                    idx_array[counter,0] = i
+                    idx_array[counter,1] = j
+                    idx_array[counter,2] = k
+                    idx_array[counter,3] = l
+                    counter += 1
+    return idx_array[:counter]
     

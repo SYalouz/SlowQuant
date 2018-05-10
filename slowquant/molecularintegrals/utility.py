@@ -38,7 +38,7 @@ def boys_function(m,z):
     else:
         F = 0.0
         temp1 = factorial2(2*m-1)
-        threshold = 10**-12
+        threshold = 10**-14
         for i in range(0, 1000):
             Fcheck = F
             F += (temp1*(2*z)**i)/(factorial2(2*m+2*i+1))
@@ -63,3 +63,30 @@ def nuclear_nuclear_repulsion(molecule):
 @jit(nopython=True,cache=True)
 def transform_to_spherical():
     None
+    
+
+@jit(float64(float64[:],float64[:],float64[:],float64[:],float64[:],float64[:], float64[:,:,:], int64, int64, int64, int64, int64, int64),nopython=True,cache=True)
+def ERI_expansion_coeff_sum(Ex1, Ey1, Ez1, Ex2, Ey2, Ez2, R, tmax, umax, vmax, taumax, numax, phimax):
+    output = 0.0
+    for tau in range(0, taumax):
+        for nu in range(0, numax):
+            for phi in range(0, phimax):
+                temp = (-1.0)**(tau+nu+phi)*Ex2[tau]*Ey2[nu]*Ez2[phi]
+                for t in range(0, tmax):
+                    for u in range(0, umax):
+                        for v in range(0, vmax):
+                            output += temp*Ex1[t]*Ey1[u]*Ez1[v]*R[t+tau,u+nu,v+phi]
+    return output
+
+
+@jit(float64(float64[:],float64[:],float64[:],float64[:],float64[:,:,:,:]),nopython=True,cache=True)
+def ERI_contraction(c1, c2, c3, c4, primitives):
+    output = 0.0
+    for i in range(0, len(c1)):
+        for j in range(0, len(c2)):
+            for k in range(0, len(c3)):
+                for l in range(0, len(c4)):
+                    output += c1[i]*c2[j]*c3[k]*c4[l]*primitives[i,j,k,l]
+    return output
+    
+    

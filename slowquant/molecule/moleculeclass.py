@@ -167,3 +167,4 @@ class basis_shells:
         self.contraction_coeffs = contract_coeffs
         self.angular_moment = ang_xyz
         self.basis_function_idx = basis_idx
+        self.pseudo_normed_contract_coeffs = False

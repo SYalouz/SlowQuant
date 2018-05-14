@@ -1,5 +1,6 @@
 import numpy as np
 from numba import jit, float64, int64
+import math
 
 
 @jit(float64(float64),nopython=True,cache=True)
@@ -34,7 +35,9 @@ def boys_function(m,z):
         F = factorial2(2*m-1)/(2**(m+1))*(pi/(z**(2*m+1)))**0.5
     elif z == 0.0:
         # special case of T = 0
-        return 1.0/(2.0*m+1.0)
+        F = 1.0/(2.0*m+1.0)
+    elif m == 0:
+        F = (pi/(4*z))**0.5*math.erf(z)
     else:
         F = 0.0
         temp1 = factorial2(2*m-1)
@@ -76,17 +79,6 @@ def ERI_expansion_coeff_sum(Ex1, Ey1, Ez1, Ex2, Ey2, Ez2, R, tmax, umax, vmax, t
                     for u in range(0, umax):
                         for v in range(0, vmax):
                             output += temp*Ex1[t]*Ey1[u]*Ez1[v]*R[t+tau,u+nu,v+phi]
-    return output
-
-
-@jit(float64(float64[:],float64[:],float64[:],float64[:],float64[:,:,:,:]),nopython=True,cache=True)
-def ERI_contraction(c1, c2, c3, c4, primitives):
-    output = 0.0
-    for i in range(0, len(c1)):
-        for j in range(0, len(c2)):
-            for k in range(0, len(c3)):
-                for l in range(0, len(c4)):
-                    output += c1[i]*c2[j]*c3[k]*c4[l]*primitives[i,j,k,l]
     return output
     
 
@@ -143,4 +135,3 @@ def make_idx_list_two_electron(idx_list_1, idx_list_2, idx_list_3, idx_list_4, i
                     idx_array[counter,3] = l
                     counter += 1
     return idx_array[:counter]
-    

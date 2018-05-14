@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from numba import jit, float64, int64
 from slowquant.molecularintegrals.overlap import *
 from slowquant.molecularintegrals.nuclear_electron_potential import *
@@ -21,6 +22,16 @@ class _Integrals:
         self._E_buffer_2 = np.zeros((3,3,3,3)) # Up to p functions
         self._R_buffer = np.zeros((5,5,5,5)) # Up to p functions
         self._idx_buffer = np.zeros((81,4),dtype=int) # Up to p functions
+        self._norm_array = np.zeros((3,3,3))
+        for i in range(0, 3):
+            for j in range(0, 3):
+                for k in range(0, 3):
+                    self._norm_array[i,j,k] = math.factorial(j)*math.factorial(i)*math.factorial(k)/(math.factorial(2*j)*math.factorial(2*i)*math.factorial(2*k))
+        for i in range(0, self.molecule_obj.get_number_shells()):
+            temp = np.zeros(len(self.molecule_obj._basis_shell_list[i].contraction_coeffs))
+            for j in range(0, len(self.molecule_obj._basis_shell_list[i].contraction_coeffs)):
+                temp[j] = self.molecule_obj._basis_shell_list[i].contraction_coeffs[j]*(2*self.molecule_obj._basis_shell_list[i].exponents[j]/3.141592653589793238462643383279)**(3.0/4.0)*(8.0*self.molecule_obj._basis_shell_list[i].exponents[j])**self.molecule_obj._basis_shell_list[i].angular_moment
+            self.molecule_obj._basis_shell_list[i].pseudo_normed_contract_coeffs = temp
         
     def Overlap_integral(self, shell_number_1, shell_number_2):
         angular_moment_1 = self.molecule_obj._basis_shell_list[shell_number_1].angular_moment
@@ -85,22 +96,22 @@ class _Integrals:
         gauss_exp_2 = self.molecule_obj._basis_shell_list[shell_number_2].exponents
         gauss_exp_3 = self.molecule_obj._basis_shell_list[shell_number_3].exponents
         gauss_exp_4 = self.molecule_obj._basis_shell_list[shell_number_4].exponents
-        Contra_coeffs_1 = self.molecule_obj._basis_shell_list[shell_number_1].contraction_coeffs
-        Contra_coeffs_2 = self.molecule_obj._basis_shell_list[shell_number_2].contraction_coeffs
-        Contra_coeffs_3 = self.molecule_obj._basis_shell_list[shell_number_3].contraction_coeffs
-        Contra_coeffs_4 = self.molecule_obj._basis_shell_list[shell_number_4].contraction_coeffs
+        Contra_coeffs_1 = self.molecule_obj._basis_shell_list[shell_number_1].pseudo_normed_contract_coeffs
+        Contra_coeffs_2 = self.molecule_obj._basis_shell_list[shell_number_2].pseudo_normed_contract_coeffs
+        Contra_coeffs_3 = self.molecule_obj._basis_shell_list[shell_number_3].pseudo_normed_contract_coeffs
+        Contra_coeffs_4 = self.molecule_obj._basis_shell_list[shell_number_4].pseudo_normed_contract_coeffs
         if angular_moment_1 == 0 and angular_moment_2 == 0 and angular_moment_3 == 0 and angular_moment_4 == 0:
             return electron_electron_integral_0_0_0_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:1], self._output_buffer)
         elif angular_moment_1 == 1 and angular_moment_2 == 0 and angular_moment_3 == 0 and angular_moment_4 == 0:
-            return electron_electron_integral_1_0_0_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:3], self._output_buffer)
+            return electron_electron_integral_1_0_0_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:3], self._output_buffer, self._norm_array)
         elif angular_moment_1 == 1 and angular_moment_2 == 1 and angular_moment_3 == 0 and angular_moment_4 == 0:
-            return electron_electron_integral_1_1_0_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:9], self._output_buffer)
+            return electron_electron_integral_1_1_0_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:9], self._output_buffer, self._norm_array)
         elif angular_moment_1 == 1 and angular_moment_2 == 0 and angular_moment_3 == 1 and angular_moment_4 == 0:
-            return electron_electron_integral_1_0_1_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:9], self._output_buffer)
+            return electron_electron_integral_1_0_1_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:9], self._output_buffer, self._norm_array)
         elif angular_moment_1 == 1 and angular_moment_2 == 1 and angular_moment_3 == 1 and angular_moment_4 == 0:
-            return electron_electron_integral_1_1_1_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:27], self._output_buffer)
+            return electron_electron_integral_1_1_1_0(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:27], self._output_buffer, self._norm_array)
         elif angular_moment_1 == 1 and angular_moment_2 == 1 and angular_moment_3 == 1 and angular_moment_4 == 1:
-            return electron_electron_integral_1_1_1_1(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:81], self._output_buffer)
+            return electron_electron_integral_1_1_1_1(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._Contraction_1_buffer, self._Contraction_2_buffer, self._Contraction_3_buffer, self._Contraction_4_buffer, self._E_buffer, self._E_buffer_2, self._R_buffer, self._primitives_buffer_2[:81], self._output_buffer, self._norm_array)
         
     def Nuclear_nuclear_repulsion(self):
         None

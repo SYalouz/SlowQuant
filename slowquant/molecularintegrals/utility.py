@@ -13,7 +13,7 @@ def factorial2(n):
     return out
     
 
-@jit(float64(float64, float64, float64, float64),nopython=True,cache=True)
+@jit(float64(float64, float64, float64, float64), nopython=True, cache=True)
 def Normalization(l, m, n, c):
     """
     Calculates the normalizations coefficients of the basisfunctions.
@@ -25,8 +25,25 @@ def Normalization(l, m, n, c):
     part3 = (factorial2(int(2*l-1))*factorial2(int(2*m-1))*factorial2(int(2*n-1)))**0.5
     N = part1 * ((part2)/(part3))
     return N
+   
+    
+@jit(float64(float64, float64), nopython=True, cache=True)
+def PsuedoNorm(max_ang, c):
+    # Normalize primitive functions
+    N = c**((2.0*max_ang+3.0)/(4.0))
+    return N
 
 
+@jit(float64(float64, float64, float64), nopython=True, cache=True)
+def PsuedoNorm2(l,m,n):
+    pi = 3.141592653589793238462643383279
+    # Normalize primitive functions
+    part1 = (2.0/pi)**(3.0/4.0)*2.0**(l+m+n)
+    part3 = (factorial2(int(2*l-1))*factorial2(int(2*m-1))*factorial2(int(2*n-1)))**0.5
+    N = part1/part3
+    return N
+
+"""
 @jit(float64(float64,float64),nopython=True,cache=True)
 def boys_function(m,z):
     pi = 3.141592653589793238462643383279
@@ -45,6 +62,28 @@ def boys_function(m,z):
         for i in range(0, 1000):
             Fcheck = F
             F += (temp1*(2*z)**i)/(factorial2(2*m+2*i+1))
+            Fcheck -= F
+            if abs(Fcheck) < threshold:
+                break
+        F *= np.exp(-z)
+    return F
+"""
+@jit(float64(float64,float64),nopython=True,cache=True)
+def boys_function(m,z):
+    pi = 3.141592653589793238462643383279
+    if z > 25:
+        # Long range approximation
+        F = factorial2(2*m-1)/(2.0**(m+1.0))*(pi/(z**(2.0*m+1.0)))**0.5
+    elif z == 0.0:
+        # special case of T = 0
+        return 1.0/(2.0*m+1.0)
+    else:
+        F = 0.0
+        temp1 = factorial2(2*m-1)
+        threshold = 10**-12
+        for i in range(0, 1000):
+            Fcheck = F
+            F += (temp1*(2.0*z)**i)/(factorial2(2*m+2*i+1))
             Fcheck -= F
             if abs(Fcheck) < threshold:
                 break
@@ -80,6 +119,40 @@ def ERI_expansion_coeff_sum(Ex1, Ey1, Ez1, Ex2, Ey2, Ez2, R, tmax, umax, vmax, t
                         for v in range(0, vmax):
                             output += temp*Ex1[t]*Ey1[u]*Ez1[v]*R[t+tau,u+nu,v+phi]
     return output
+    
+    
+@jit(float64(float64[:], float64[:], float64[:], float64[:,:,:], int64, int64, int64), nopython=True, cache=True)
+def Expansion_coeff_sum(Ex, Ey, Ez, R, tmax, umax, vmax):
+    output = 0.0
+    for t in range(0, tmax):
+        for u in range(0, umax):
+            for v in range(0, vmax):
+                output += Ex[t]*Ey[u]*Ez[v]*R[t,u,v]
+    return output
+    
+    
+@jit(float64(float64[:,:], float64[:], float64[:]), nopython=True, cache=True)
+def Contraction_one_electron(primitives, contra_coeff_1, contra_coeff_2):
+    out = 0.0
+    for i in range(contra_coeff_1.shape[0]):
+        temp1 = contra_coeff_1[i]
+        for j in range(contra_coeff_2.shape[0]):
+            out += temp1*contra_coeff_2[j]*primitives[i,j]
+    return out
+    
+    
+@jit(float64(float64[:,:,:,:], float64[:], float64[:], float64[:], float64[:]), nopython=True, cache=True)
+def Contraction_two_electron(primitives, contra_coeff_1, contra_coeff_2, contra_coeff_3, contra_coeff_4):
+    out = 0.0
+    for i in range(contra_coeff_1.shape[0]):
+        temp1 = contra_coeff_1[i]
+        for j in range(contra_coeff_2.shape[0]):
+            temp2 = temp1*contra_coeff_2[j]
+            for k in range(contra_coeff_3.shape[0]):
+                temp3 = temp2*contra_coeff_3[k]
+                for l in range(contra_coeff_4.shape[0]):
+                    out += temp3*contra_coeff_4[l]*primitives[i,j,k,l]
+    return out
     
 
 @jit(float64[:,:,:,:](int64[:],int64[:],int64[:],int64[:],float64[:,:,:,:], float64[:]),nopython=True,cache=True)
@@ -134,4 +207,21 @@ def make_idx_list_two_electron(idx_list_1, idx_list_2, idx_list_3, idx_list_4, i
                     idx_array[counter,2] = k
                     idx_array[counter,3] = l
                     counter += 1
+    return idx_array[:counter]
+    
+    
+@jit(int64[:,:](int64[:],int64[:],int64[:,:]),nopython=True,cache=True)
+def make_idx_list_one_electron(idx_list_1, idx_list_2, idx_array):
+    # Not actual angular_moment
+    angular_moment_1 = len(idx_list_1)
+    angular_moment_2 = len(idx_list_2)
+    if angular_moment_1 < angular_moment_2:
+        angular_moment_1, angular_moment_2 = angular_moment_2, angular_moment_1
+        idx_list_1, idx_list_2 = idx_list_2, idx_list_1
+    counter = 0
+    for i in idx_list_1:
+        for j in idx_list_2:
+            idx_array[counter,0] = i
+            idx_array[counter,1] = j
+            counter += 1
     return idx_array[:counter]

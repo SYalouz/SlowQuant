@@ -53,7 +53,7 @@ def R(t, u, v, n):
         
 def write_hermite_integral(max_angular):
     global steps
-    S_file = open("../../slowquant/molecularintegrals/hermite_integral.py", "w+")
+    S_file = open("slowquant/molecularintegrals/hermite_integral.py", "w+")
     S_file.write("import numpy as np\n")
     S_file.write("from numba import jit, float64\n")
     S_file.write("from slowquant.molecularintegrals.utility import boys_function\n")
@@ -79,7 +79,5 @@ def write_hermite_integral(max_angular):
                                     unique_steps.append(steps[i])
                             for step in unique_steps:
                                 S_file.write("    "+step+"\n")
-                            S_file.write("    return R[0:"+str(la+lb+lc+ld+1)+",0:"+str(la+lb+lc+ld+1)+",0:"+str(la+lb+lc+ld+1)+",0]\n")
+                            S_file.write("    return R[:,:,:,0]\n")
                             S_file.write("\n\n")
-                            
-write_hermite_integral(1)

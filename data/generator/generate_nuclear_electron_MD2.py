@@ -2,7 +2,7 @@ import numpy as np
 
 
 def write_nuclear_electron(max_angular):
-    S_file = open("../../slowquant/molecularintegrals/nuclear_electron_MD2.py", "w+")
+    S_file = open("slowquant/molecularintegrals/nuclear_electron_MD2.py", "w+")
     S_file.write("import numpy as np\n")
     S_file.write("from numba import jit, float64\n")
     S_file.write("from slowquant.molecularintegrals.utility import Contraction_one_electron, Expansion_coeff_sum\n")
@@ -48,7 +48,3 @@ def write_nuclear_electron(max_angular):
             S_file.write("        output_buffer[i] = Contraction_one_electron(primitives_buffer[:,:,i], Contra_coeffs_1, Contra_coeffs_2)\n")
             S_file.write("    return output_buffer\n")
             S_file.write("\n\n")
-
-
-
-write_nuclear_electron(1)

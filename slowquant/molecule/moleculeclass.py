@@ -145,8 +145,9 @@ class _Molecule:
                                                                                                          self.__current_basis_idx+1,
                                                                                                          self.__current_basis_idx+2,
                                                                                                          self.__current_basis_idx+3,
-                                                                                                         self.__current_basis_idx+4],dtype=int)))
-            self.__current_basis_idx += 5
+                                                                                                         self.__current_basis_idx+4,
+                                                                                                         self.__current_basis_idx+5],dtype=int)))
+            self.__current_basis_idx += 6
                             
     
 class Atom:

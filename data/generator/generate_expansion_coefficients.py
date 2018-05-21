@@ -74,23 +74,23 @@ def E(i, j, t):
 
 def generate_expansion_coefficients(max_angular_moment):
     global steps
-    S_file = open("../../slowquant/molecularintegrals/expansion_coefficients.py", "w+")
+    S_file = open("slowquant/molecularintegrals/expansion_coefficients.py", "w+")
     S_file.write("import numpy as np\n")
     S_file.write("from numba import jit, float64\n")
     S_file.write("\n\n")
     
     for la in range(max_angular_moment+1):
         for lb in range(max_angular_moment+1):
-            if la >= lb and la+lb <= max_angular_moment:
+            if la >= lb and la+lb <= 2*max_angular_moment:
                 for lc in range(0, la+lb+1):
                     if lc == la+lb or lc == 0:
                         S_file.write("@jit(float64[:,:,:,:](float64, float64, float64[:], float64[:], float64[:], float64[:,:,:,:]), nopython=True, cache=True)\n")
                         S_file.write("def E_"+str(la)+"_"+str(lb)+"_"+str(lc)+"(q, p12, XAB, XPA, XPB, E):\n")
                         steps = []
                         for i in range(la, -1, -1):
-                            for j in range(la, -1, -1):
+                            for j in range(lb, -1, -1):
                                 for t in range(lc+1):
-                                    if  i <= la and j <= la and i+j >= t and i+j <= la+lb:
+                                    if  i <= la and j <= lb and i+j >= t and i+j <= la+lb:
                                         E(i, j, t)
                         unique_steps = []
                         for k in range(-1, -len(steps)-1, -1):
@@ -101,5 +101,3 @@ def generate_expansion_coefficients(max_angular_moment):
                         S_file.write("    return E\n")
                         S_file.write("\n\n")
                                     
-                                    
-generate_expansion_coefficients(2)

@@ -5,8 +5,8 @@ from slowquant.molecularintegrals.utility import boys_function
 
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
 def R_0_0_0_0(p, XPC, YPC, ZPC, RPC, R):
-    R[0,0,0,0] = (-2.0*p)**0 * boys_function(0,p*RPC*RPC)
-    return R[0:1,0:1,0:1,0]
+    R[0,0,0,0] = (-2.0*p)**0.0 * boys_function(0,p*RPC*RPC)
+    return R[:,:,:,0]
 
 
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
@@ -16,7 +16,7 @@ def R_1_0_0_0(p, XPC, YPC, ZPC, RPC, R):
     R[0,0,1,0] = ZPC * R[0,0,0,1]
     R[0,1,0,0] = YPC * R[0,0,0,1]
     R[1,0,0,0] = XPC * R[0,0,0,1]
-    return R[0:2,0:2,0:2,0]
+    return R[:,:,:,0]
 
 
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
@@ -36,7 +36,7 @@ def R_1_0_1_0(p, XPC, YPC, ZPC, RPC, R):
     R[1,1,0,0] = XPC * R[0,1,0,1]
     R[1,0,0,1] = XPC * R[0,0,0,2]
     R[2,0,0,0] = 1 * R[0,0,0,1] + XPC * R[1,0,0,1]
-    return R[0:3,0:3,0:3,0]
+    return R[:,:,:,0]
 
 
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
@@ -56,7 +56,7 @@ def R_1_1_0_0(p, XPC, YPC, ZPC, RPC, R):
     R[1,1,0,0] = XPC * R[0,1,0,1]
     R[1,0,0,1] = XPC * R[0,0,0,2]
     R[2,0,0,0] = 1 * R[0,0,0,1] + XPC * R[1,0,0,1]
-    return R[0:3,0:3,0:3,0]
+    return R[:,:,:,0]
 
 
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
@@ -96,7 +96,7 @@ def R_1_1_1_0(p, XPC, YPC, ZPC, RPC, R):
     R[1,0,0,2] = XPC * R[0,0,0,3]
     R[2,0,0,1] = 1 * R[0,0,0,2] + XPC * R[1,0,0,2]
     R[3,0,0,0] = 2 * R[1,0,0,1] + XPC * R[2,0,0,1]
-    return R[0:4,0:4,0:4,0]
+    return R[:,:,:,0]
 
 
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
@@ -171,6 +171,6 @@ def R_1_1_1_1(p, XPC, YPC, ZPC, RPC, R):
     R[2,0,0,2] = 1 * R[0,0,0,3] + XPC * R[1,0,0,3]
     R[3,0,0,1] = 2 * R[1,0,0,2] + XPC * R[2,0,0,2]
     R[4,0,0,0] = 3 * R[2,0,0,1] + XPC * R[3,0,0,1]
-    return R[0:5,0:5,0:5,0]
+    return R[:,:,:,0]
 
 

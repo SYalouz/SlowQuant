@@ -7,10 +7,18 @@ def R(t, u, v, n):
     return_check_t = [0,0]
     output = "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = "
     if t == 0 and u == 0 and v == 0:
-        output += "(-2.0*p)**"+str(n)+".0 * boys_function("+str(n)+",p*RPC*RPC)"
+        if n == 0:
+            output += "boys_function_n_zero(p*RPC*RPC)"
+        elif n == 1:
+            output += "-2.0*p * boys_function("+str(n)+",p*RPC*RPC)"
+        else:
+            output += "(-2.0*p)**"+str(n)+".0 * boys_function("+str(n)+",p*RPC*RPC)"
     elif t == 0 and u == 0:
         if v > 1:
-            output += str(v-1)+" * R["+str(t)+","+str(u)+","+str(v-2)+","+str(n+1)+"]"
+            if v-1 == 1:
+                output += "R["+str(t)+","+str(u)+","+str(v-2)+","+str(n+1)+"]"
+            else:
+                output += str(v-1)+".0 * R["+str(t)+","+str(u)+","+str(v-2)+","+str(n+1)+"]"
             return_check_v[0] = 1
         if output != "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = ":
             output += " + "
@@ -18,7 +26,10 @@ def R(t, u, v, n):
         return_check_v[1] = 1
     elif t == 0:
         if u > 1:
-            output += str(u-1)+" * R["+str(t)+","+str(u-2)+","+str(v)+","+str(n+1)+"]"
+            if u-1 == 1:
+                output += "R["+str(t)+","+str(u-2)+","+str(v)+","+str(n+1)+"]"
+            else:
+                output += str(u-1)+".0 * R["+str(t)+","+str(u-2)+","+str(v)+","+str(n+1)+"]"
             return_check_u[0] = 1
         if output != "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = ":
             output += " + "
@@ -26,7 +37,10 @@ def R(t, u, v, n):
         return_check_u[1] = 1
     else:
         if t > 1:
-            output += str(t-1)+" * R["+str(t-2)+","+str(u)+","+str(v)+","+str(n+1)+"]"
+            if t-1 == 0:
+                output += "R["+str(t-2)+","+str(u)+","+str(v)+","+str(n+1)+"]"
+            else:
+                output += str(t-1)+".0 * R["+str(t-2)+","+str(u)+","+str(v)+","+str(n+1)+"]"
             return_check_t[0] = 1
         if output != "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = ":
             output += " + "
@@ -56,7 +70,7 @@ def write_hermite_integral(max_angular):
     S_file = open("slowquant/molecularintegrals/hermite_integral.py", "w+")
     S_file.write("import numpy as np\n")
     S_file.write("from numba import jit, float64\n")
-    S_file.write("from slowquant.molecularintegrals.utility import boys_function\n")
+    S_file.write("from slowquant.molecularintegrals.utility import boys_function, boys_function_n_zero\n")
     S_file.write("\n\n")
     
     for la in range(max_angular+1):

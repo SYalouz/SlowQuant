@@ -21,7 +21,10 @@ def E(i, j, t):
         if not ((t+1 < 0) or (t+1 > i-1 + j)):
             if output != "E["+str(i)+","+str(j)+","+str(t)+",:] = ":
                 output += " + "
-            output += str(t+1.0)+" * E["+str(i-1)+","+str(j)+","+str(t+1)+",:]"
+            if t+1 == 1:
+                output += "E["+str(i-1)+","+str(j)+","+str(t+1)+",:]"
+            else:
+                output += str(t+1.0)+" * E["+str(i-1)+","+str(j)+","+str(t+1)+",:]"
             return_check_i[2] = 1
     else:
         if not ((t-1 < 0) or (t-1 > i-1 + j)):
@@ -35,7 +38,10 @@ def E(i, j, t):
         if not ((t+1 < 0) or (t+1 > i-1 + j)):
             if output != "E["+str(i)+","+str(j)+","+str(t)+",:] = ":
                 output += " + "
-            output += str(t+1.0)+" * E["+str(i)+","+str(j-1)+","+str(t+1)+",:]"
+            if t+1 == 1:
+                output += "E["+str(i)+","+str(j-1)+","+str(t+1)+",:]"
+            else:
+                output += str(t+1.0)+" * E["+str(i)+","+str(j-1)+","+str(t+1)+",:]"
             return_check_j[2] = 1
   
     if output != "E["+str(i)+","+str(j)+","+str(t)+",:] = ":

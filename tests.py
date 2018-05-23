@@ -87,8 +87,8 @@ def test_electron_electron_up_to_d():
     ERI_check = np.load("data/testfiles/ERI_6-31Gs_Li2.npy")
     
     assert np.max(np.abs(ERI_check - A.Integrals.get_Electron_electron_matrix())) < 10**-8
-    
-
+"""    
+"""
 def test_kinetic_up_to_d():
     A = sq.SlowQuant()
     A.set_molecule("data/testfiles/Li2.xyz",set_unit="bohr")

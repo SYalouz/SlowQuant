@@ -3,7 +3,7 @@ from numba import jit, float64, int64
 import math
 
 
-@jit(float64(float64),nopython=True,cache=True)
+@jit(float64(float64), nopython=True, cache=True)
 def factorial2(n):
     n_range = int(n)
     out = 1.0
@@ -12,20 +12,6 @@ def factorial2(n):
             out = out*(n-2*i)
     return out
     
-
-@jit(float64(float64, float64, float64, float64), nopython=True, cache=True)
-def Normalization(l, m, n, c):
-    """
-    Calculates the normalizations coefficients of the basisfunctions.
-    """
-    pi = 3.141592653589793238462643383279
-    # Normalize primitive functions
-    part1 = (2.0/pi)**(3.0/4.0)
-    part2 = 2.0**(l+m+n) * c**((2.0*l+2.0*m+2.0*n+3.0)/(4.0))
-    part3 = (factorial2(int(2*l-1))*factorial2(int(2*m-1))*factorial2(int(2*n-1)))**0.5
-    N = part1 * ((part2)/(part3))
-    return N
-   
     
 @jit(float64(float64, float64), nopython=True, cache=True)
 def PsuedoNorm(max_ang, c):
@@ -43,55 +29,40 @@ def PsuedoNorm2(l,m,n):
     N = part1/part3
     return N
 
-"""
-@jit(float64(float64,float64),nopython=True,cache=True)
-def boys_function(m,z):
+
+@jit(float64(float64), nopython=True, cache=True)
+def boys_function_n_zero(z):
     pi = 3.141592653589793238462643383279
-    if z > 25:
-        # Long range approximation
-        F = factorial2(2*m-1)/(2**(m+1))*(pi/(z**(2*m+1)))**0.5
-    elif z == 0.0:
-        # special case of T = 0
-        F = 1.0/(2.0*m+1.0)
-    elif m == 0:
-        F = (pi/(4*z))**0.5*math.erf(z)
+    if z < 10**-10:
+        F = 1.0
     else:
-        F = 0.0
-        temp1 = factorial2(2*m-1)
-        threshold = 10**-14
-        for i in range(0, 1000):
-            Fcheck = F
-            F += (temp1*(2*z)**i)/(factorial2(2*m+2*i+1))
-            Fcheck -= F
-            if abs(Fcheck) < threshold:
-                break
-        F *= np.exp(-z)
+        F = (pi/(4.0*z))**0.5*math.erf(z**0.5)
     return F
-"""
-@jit(float64(float64,float64),nopython=True,cache=True)
+
+
+@jit(float64(float64,float64), nopython=True, cache=True)
 def boys_function(m,z):
     pi = 3.141592653589793238462643383279
     if z > 25:
         # Long range approximation
         F = factorial2(2*m-1)/(2.0**(m+1.0))*(pi/(z**(2.0*m+1.0)))**0.5
-    elif z == 0.0:
+    elif z < 10**-10:
         # special case of T = 0
         return 1.0/(2.0*m+1.0)
     else:
         F = 0.0
-        temp1 = factorial2(2*m-1)
         threshold = 10**-12
         for i in range(0, 1000):
             Fcheck = F
-            F += (temp1*(2.0*z)**i)/(factorial2(2*m+2*i+1))
+            F += (2.0*z)**i/(factorial2(2*m+2*i+1))
             Fcheck -= F
             if abs(Fcheck) < threshold:
                 break
-        F *= np.exp(-z)
+        F *= np.exp(-z)*factorial2(2*m-1)
     return F
     
 
-@jit(float64(float64[:,:]),nopython=True,cache=True)
+@jit(float64(float64[:,:]), nopython=True, cache=True)
 def nuclear_nuclear_repulsion(molecule):
     #Classical nucleus nucleus repulsion
     Vnn = 0
@@ -107,7 +78,7 @@ def transform_to_spherical():
     None
     
 
-@jit(float64(float64[:],float64[:],float64[:],float64[:],float64[:],float64[:], float64[:,:,:], int64, int64, int64, int64, int64, int64),nopython=True,cache=True)
+@jit(float64(float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:], int64, int64, int64, int64, int64, int64), nopython=True, cache=True)
 def ERI_expansion_coeff_sum(Ex1, Ey1, Ez1, Ex2, Ey2, Ez2, R, tmax, umax, vmax, taumax, numax, phimax):
     output = 0.0
     for tau in range(0, taumax):

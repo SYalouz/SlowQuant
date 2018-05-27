@@ -24,6 +24,7 @@ def PsuedoNorm2(l,m,n):
 def write_electron_electron(max_angular):
     S_file = open("slowquant/molecularintegrals/electron_electron_MD4.py", "w+")
     S_file.write("import numpy as np\n")
+    S_file.write("from numpy import exp\n")
     S_file.write("from numba import jit, float64\n")
     S_file.write("from slowquant.molecularintegrals.utility import ERI_expansion_coeff_sum, Contraction_two_electron\n")
     S_file.write("from slowquant.molecularintegrals.expansion_coefficients import *\n")
@@ -64,13 +65,16 @@ def write_electron_electron(max_angular):
                             S_file.write("                    p_right = gauss_exp_1_right + gauss_exp_2_right\n")
                             S_file.write("                    q_right = gauss_exp_1_right * gauss_exp_2_right / p_right\n")
                             S_file.write("                    P_right = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right\n")
-                            S_file.write("                    XPA_right = P_right - Coord_3\n")
-                            S_file.write("                    XPB_right = P_right - Coord_4\n")
                             S_file.write("                    alpha = p_left*p_right/(p_left+p_right)\n")
                             S_file.write("                    XPC, YPC, ZPC = P_left - P_right\n")
                             S_file.write("                    RPC = ((XPC)**2+(YPC)**2+(ZPC)**2)**0.5\n")
-                            S_file.write("                    p12_right = 1.0/(2.0*p_right)\n")
-                            S_file.write("                    E_buff_2 = E_"+str(lc)+"_"+str(ld)+"_"+str(lc+ld)+"(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)\n")
+                            if lc == 0 and ld == 0:
+                                S_file.write("                    E_buff_2[0,0,0,:] = exp(-q_right*XAB_right*XAB_right)\n")
+                            else:
+                                S_file.write("                    XPA_right = P_right - Coord_3\n")
+                                S_file.write("                    XPB_right = P_right - Coord_4\n")
+                                S_file.write("                    p12_right = 1.0/(2.0*p_right)\n")
+                                S_file.write("                    E_buff_2 = E_"+str(lc)+"_"+str(ld)+"_"+str(lc+ld)+"(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)\n")
                             S_file.write("                    R_array = R_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"(alpha, XPC, YPC, ZPC, RPC, R_buffer)\n")
                             S_file.write("                    counter = 0\n")
                             indentation = "                    "

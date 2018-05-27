@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import exp
 from numba import jit, float64
 from slowquant.molecularintegrals.utility import ERI_expansion_coeff_sum, Contraction_two_electron
 from slowquant.molecularintegrals.expansion_coefficients import *
@@ -31,13 +32,10 @@ def electron_electron_integral_0_0_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, g
                     p_right = gauss_exp_1_right + gauss_exp_2_right
                     q_right = gauss_exp_1_right * gauss_exp_2_right / p_right
                     P_right = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right
-                    XPA_right = P_right - Coord_3
-                    XPB_right = P_right - Coord_4
                     alpha = p_left*p_right/(p_left+p_right)
                     XPC, YPC, ZPC = P_left - P_right
                     RPC = ((XPC)**2+(YPC)**2+(ZPC)**2)**0.5
-                    p12_right = 1.0/(2.0*p_right)
-                    E_buff_2 = E_0_0_0(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)
+                    E_buff_2[0,0,0,:] = exp(-q_right*XAB_right*XAB_right)
                     R_array = R_0_0_0_0(alpha, XPC, YPC, ZPC, RPC, R_buffer)
                     counter = 0
                     primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1[0,0,:,0],E_buff_1[0,0,:,1],E_buff_1[0,0,:,2],E_buff_2[0,0,:,0],E_buff_2[0,0,:,1],E_buff_2[0,0,:,2],R_array,1,1,1,1,1,1)
@@ -74,13 +72,10 @@ def electron_electron_integral_1_0_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, g
                     p_right = gauss_exp_1_right + gauss_exp_2_right
                     q_right = gauss_exp_1_right * gauss_exp_2_right / p_right
                     P_right = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right
-                    XPA_right = P_right - Coord_3
-                    XPB_right = P_right - Coord_4
                     alpha = p_left*p_right/(p_left+p_right)
                     XPC, YPC, ZPC = P_left - P_right
                     RPC = ((XPC)**2+(YPC)**2+(ZPC)**2)**0.5
-                    p12_right = 1.0/(2.0*p_right)
-                    E_buff_2 = E_0_0_0(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)
+                    E_buff_2[0,0,0,:] = exp(-q_right*XAB_right*XAB_right)
                     R_array = R_1_0_0_0(alpha, XPC, YPC, ZPC, RPC, R_buffer)
                     counter = 0
                     for x1 in range(1, -1, -1):
@@ -120,11 +115,11 @@ def electron_electron_integral_1_0_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, g
                     p_right = gauss_exp_1_right + gauss_exp_2_right
                     q_right = gauss_exp_1_right * gauss_exp_2_right / p_right
                     P_right = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right
-                    XPA_right = P_right - Coord_3
-                    XPB_right = P_right - Coord_4
                     alpha = p_left*p_right/(p_left+p_right)
                     XPC, YPC, ZPC = P_left - P_right
                     RPC = ((XPC)**2+(YPC)**2+(ZPC)**2)**0.5
+                    XPA_right = P_right - Coord_3
+                    XPB_right = P_right - Coord_4
                     p12_right = 1.0/(2.0*p_right)
                     E_buff_2 = E_1_0_1(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)
                     R_array = R_1_0_1_0(alpha, XPC, YPC, ZPC, RPC, R_buffer)
@@ -169,13 +164,10 @@ def electron_electron_integral_1_1_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, g
                     p_right = gauss_exp_1_right + gauss_exp_2_right
                     q_right = gauss_exp_1_right * gauss_exp_2_right / p_right
                     P_right = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right
-                    XPA_right = P_right - Coord_3
-                    XPB_right = P_right - Coord_4
                     alpha = p_left*p_right/(p_left+p_right)
                     XPC, YPC, ZPC = P_left - P_right
                     RPC = ((XPC)**2+(YPC)**2+(ZPC)**2)**0.5
-                    p12_right = 1.0/(2.0*p_right)
-                    E_buff_2 = E_0_0_0(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)
+                    E_buff_2[0,0,0,:] = exp(-q_right*XAB_right*XAB_right)
                     R_array = R_1_1_0_0(alpha, XPC, YPC, ZPC, RPC, R_buffer)
                     counter = 0
                     for x1 in range(1, -1, -1):
@@ -218,11 +210,11 @@ def electron_electron_integral_1_1_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, g
                     p_right = gauss_exp_1_right + gauss_exp_2_right
                     q_right = gauss_exp_1_right * gauss_exp_2_right / p_right
                     P_right = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right
-                    XPA_right = P_right - Coord_3
-                    XPB_right = P_right - Coord_4
                     alpha = p_left*p_right/(p_left+p_right)
                     XPC, YPC, ZPC = P_left - P_right
                     RPC = ((XPC)**2+(YPC)**2+(ZPC)**2)**0.5
+                    XPA_right = P_right - Coord_3
+                    XPB_right = P_right - Coord_4
                     p12_right = 1.0/(2.0*p_right)
                     E_buff_2 = E_1_0_1(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)
                     R_array = R_1_1_1_0(alpha, XPC, YPC, ZPC, RPC, R_buffer)
@@ -270,11 +262,11 @@ def electron_electron_integral_1_1_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, g
                     p_right = gauss_exp_1_right + gauss_exp_2_right
                     q_right = gauss_exp_1_right * gauss_exp_2_right / p_right
                     P_right = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right
-                    XPA_right = P_right - Coord_3
-                    XPB_right = P_right - Coord_4
                     alpha = p_left*p_right/(p_left+p_right)
                     XPC, YPC, ZPC = P_left - P_right
                     RPC = ((XPC)**2+(YPC)**2+(ZPC)**2)**0.5
+                    XPA_right = P_right - Coord_3
+                    XPB_right = P_right - Coord_4
                     p12_right = 1.0/(2.0*p_right)
                     E_buff_2 = E_1_1_2(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)
                     R_array = R_1_1_1_1(alpha, XPC, YPC, ZPC, RPC, R_buffer)

@@ -4,7 +4,7 @@ from numba import jit, float64, int64
 from slowquant.molecularintegrals.overlap_MD import *
 from slowquant.molecularintegrals.nuclear_electron_MD2 import *
 from slowquant.molecularintegrals.electron_electron_MD4 import *
-from slowquant.molecularintegrals.electron_electron_handtuned import *
+from slowquant.molecularintegrals.handtuned_integrals import *
 from slowquant.molecularintegrals.utility import put_in_array_ERI, make_idx_list_two_electron, make_idx_list_one_electron, PsuedoNorm, PsuedoNorm2
 
 
@@ -117,7 +117,7 @@ class _Integrals:
         Contra_coeffs_4 = self.molecule_obj._basis_shell_list[shell_number_4].pseudo_normed_contract_coeffs
         
         if angular_moment_1 == 0 and angular_moment_2 == 0 and angular_moment_3 == 0 and angular_moment_4 == 0:
-            return electron_electron_integral_0_0_0_0_handtuned(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_0_0_0_0_handtuned(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._output_buffer)
         elif angular_moment_1 == 1 and angular_moment_2 == 0 and angular_moment_3 == 0 and angular_moment_4 == 0:
             return electron_electron_integral_1_0_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
         elif angular_moment_1 == 1 and angular_moment_2 == 1 and angular_moment_3 == 0 and angular_moment_4 == 0:

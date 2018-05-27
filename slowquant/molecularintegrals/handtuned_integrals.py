@@ -5,8 +5,8 @@ from math import erf
 from numpy import exp
 
 
-@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:], float64[:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:]), nopython=True, cache=True)
-def electron_electron_integral_0_0_0_0_handtuned(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array):
+@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:]), nopython=True, cache=True)
+def electron_electron_integral_0_0_0_0_handtuned(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, output_buffer):
     number_primitive_1 = gauss_exp_1.shape[0]
     number_primitive_2 = gauss_exp_2.shape[0]
     number_primitive_3 = gauss_exp_3.shape[0]
@@ -32,7 +32,6 @@ def electron_electron_integral_0_0_0_0_handtuned(Coord_1, Coord_2, Coord_3, Coor
                     alpha = p_left*p_right/(p_left+p_right)
                     XPC, YPC, ZPC = P_left - P_right
                     RPC2 = (XPC)**2+(YPC)**2+(ZPC)**2
-                    p12_right = 1.0/(2.0*p_right)
                     E2 = exp(-q_right*XAB_right2)
                     E2prod = E2[0]*E2[1]*E2[2]
                     z = alpha*RPC2

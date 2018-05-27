@@ -78,12 +78,17 @@ def electron_electron_integral_1_0_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, g
                     E_buff_2[0,0,0,:] = exp(-q_right*XAB_right*XAB_right)
                     R_array = R_1_0_0_0(alpha, XPC, YPC, ZPC, RPC, R_buffer)
                     counter = 0
+                    primitives_buffer[i,j,k,l,:3] = 0.0
                     for x1 in range(1, -1, -1):
                         for y1 in range(1-x1, -1, -1):
                             for z1 in range(1-x1-y1, 0-x1-y1, -1):
-                                primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1[x1,0,:,0],E_buff_1[y1,0,:,1],E_buff_1[z1,0,:,2],E_buff_2[0,0,:,0],E_buff_2[0,0,:,1],E_buff_2[0,0,:,2],R_array,x1+1,y1+1,z1+1,1,1,1)
+                                for t in range(0, x1+1):
+                                    for u in range(0, y1+1):
+                                        for v in range(0, z1+1):
+                                            primitives_buffer[i,j,k,l,counter] += E_buff_1[x1,0,t,0]*E_buff_1[y1,0,u,1]*E_buff_1[z1,0,v,2]*R_array[t,u,v]
+
                                 counter += 1
-                    primitives_buffer[i,j,k,l,:3] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:3]
+                    primitives_buffer[i,j,k,l,:3] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:3]*E_buff_2[0,0,0,0]*E_buff_2[0,0,0,1]*E_buff_2[0,0,0,2]
     for i in range(0, 3):
         output_buffer[i] = Contraction_two_electron(primitives_buffer[:,:,:,:,i], Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4)*18.054066673528208
     return output_buffer
@@ -170,15 +175,20 @@ def electron_electron_integral_1_1_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, g
                     E_buff_2[0,0,0,:] = exp(-q_right*XAB_right*XAB_right)
                     R_array = R_1_1_0_0(alpha, XPC, YPC, ZPC, RPC, R_buffer)
                     counter = 0
+                    primitives_buffer[i,j,k,l,:9] = 0.0
                     for x1 in range(1, -1, -1):
                         for y1 in range(1-x1, -1, -1):
                             for z1 in range(1-x1-y1, 0-x1-y1, -1):
                                 for x2 in range(1, -1, -1):
                                     for y2 in range(1-x2, -1, -1):
                                         for z2 in range(1-x2-y2, 0-x2-y2, -1):
-                                            primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1[x1,x2,:,0],E_buff_1[y1,y2,:,1],E_buff_1[z1,z2,:,2],E_buff_2[0,0,:,0],E_buff_2[0,0,:,1],E_buff_2[0,0,:,2],R_array,x1+x2+1,y1+y2+1,z1+z2+1,1,1,1)
+                                            for t in range(0, x1+x2+1):
+                                                for u in range(0, y1+y2+1):
+                                                    for v in range(0, z1+z2+1):
+                                                        primitives_buffer[i,j,k,l,counter] += E_buff_1[x1,x2,t,0]*E_buff_1[y1,y2,u,1]*E_buff_1[z1,z2,v,2]*R_array[t,u,v]
+
                                             counter += 1
-                    primitives_buffer[i,j,k,l,:9] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:9]
+                    primitives_buffer[i,j,k,l,:9] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:9]*E_buff_2[0,0,0,0]*E_buff_2[0,0,0,1]*E_buff_2[0,0,0,2]
     for i in range(0, 9):
         output_buffer[i] = Contraction_two_electron(primitives_buffer[:,:,:,:,i], Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4)*36.108133347056416
     return output_buffer

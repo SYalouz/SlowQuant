@@ -77,6 +77,8 @@ def write_electron_electron(max_angular):
                                 S_file.write("                    E_buff_2 = E_"+str(lc)+"_"+str(ld)+"_"+str(lc+ld)+"(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)\n")
                             S_file.write("                    R_array = R_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"(alpha, XPC, YPC, ZPC, RPC, R_buffer)\n")
                             S_file.write("                    counter = 0\n")
+                            if lc == 0 and ld == 0 and la != 0:
+                                S_file.write("                    primitives_buffer[i,j,k,l,:"+str(combinations)+"] = 0.0\n")
                             indentation = "                    "
                             if la != 0:
                                 x1, y1, z1 = "x1", "y1", "z1"
@@ -128,50 +130,73 @@ def write_electron_electron(max_angular):
                                 indentation = indentation + "            "
                             else:
                                 x4, y4, z4 = "0", "0", "0"
-                            S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1["+x1+","+x2+",:,0],E_buff_1["+y1+","+y2+",:,1],E_buff_1["+z1+","+z2+",:,2],E_buff_2["+x3+","+x4+",:,0],E_buff_2["+y3+","+y4+",:,1],E_buff_2["+z3+","+z4+",:,2],R_array,")
-                            # Just an ugly way to make the generated code abit nice, since x y z are always zero if angular moment is 0.
-                            if x1 == "x1":
-                                S_file.write("x1+")
-                            if x2 == "x2":
-                                S_file.write("x2+")
-                            S_file.write("1,")
-                            if y1 == "y1":
-                                S_file.write("y1+")
-                            if y2 == "y2":
-                                S_file.write("y2+")
-                            S_file.write("1,")
-                            if z1 == "z1":
-                                S_file.write("z1+")
-                            if z2 == "z2":
-                                S_file.write("z2+")
-                            S_file.write("1,")
-                            if x3 == "x3":
-                                S_file.write("x3+")
-                            if x4 == "x4":
-                                S_file.write("x4+")
-                            S_file.write("1,")
-                            if y3 == "y3":
-                                S_file.write("y3+")
-                            if y4 == "y4":
-                                S_file.write("y4+")
-                            S_file.write("1,")
-                            if z3 == "z3":
-                                S_file.write("z3+")
-                            if z4 == "z4":
-                                S_file.write("z4+")
-                            S_file.write("1)")
-                            
-                            if lc > 1:
-                                S_file.write("*temp3")
-                            elif lb > 1:
-                                S_file.write("*temp2")
-                            elif la > 1:
-                                S_file.write("*temp1")
-                            if ld > 1:
-                                S_file.write("*Norm_array[x4, y4, z4]")
-                            S_file.write("\n")
-                            S_file.write(indentation+"counter += 1\n")
-                            S_file.write("                    primitives_buffer[i,j,k,l,:"+str(combinations)+"] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:"+str(combinations)+"]\n")
+                                
+                            if lc == 0 and ld == 0 and la != 0:
+                                # If the two last angular are zero, then ERI_expansion_coeff_sum() because three of the loops will be 1 long.
+                                #  it gives to much overhead using calling loops of length zero.
+                                # Therefore the code is put into the Integral directly in this special case
+                                identation_counter = indentation
+                                if lb == 0:
+                                    S_file.write(indentation+"for t in range(0, x1+1):\n")
+                                    S_file.write(indentation+"    for u in range(0, y1+1):\n")
+                                    S_file.write(indentation+"        for v in range(0, z1+1):\n")
+                                    indentation = indentation + "            "
+                                    S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] += E_buff_1[x1,0,t,0]*E_buff_1[y1,0,u,1]*E_buff_1[z1,0,v,2]*R_array[t,u,v]\n")
+                                else:
+                                    S_file.write(indentation+"for t in range(0, x1+x2+1):\n")
+                                    S_file.write(indentation+"    for u in range(0, y1+y2+1):\n")
+                                    S_file.write(indentation+"        for v in range(0, z1+z2+1):\n")
+                                    indentation = indentation + "            "
+                                    S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] += E_buff_1[x1,x2,t,0]*E_buff_1[y1,y2,u,1]*E_buff_1[z1,z2,v,2]*R_array[t,u,v]\n")
+                            else:
+                                S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1["+x1+","+x2+",:,0],E_buff_1["+y1+","+y2+",:,1],E_buff_1["+z1+","+z2+",:,2],E_buff_2["+x3+","+x4+",:,0],E_buff_2["+y3+","+y4+",:,1],E_buff_2["+z3+","+z4+",:,2],R_array,")
+                                # Just an ugly way to make the generated code abit nice, since x y z are always zero if angular moment is 0.
+                                if x1 == "x1":
+                                    S_file.write("x1+")
+                                if x2 == "x2":
+                                    S_file.write("x2+")
+                                S_file.write("1,")
+                                if y1 == "y1":
+                                    S_file.write("y1+")
+                                if y2 == "y2":
+                                    S_file.write("y2+")
+                                S_file.write("1,")
+                                if z1 == "z1":
+                                    S_file.write("z1+")
+                                if z2 == "z2":
+                                    S_file.write("z2+")
+                                S_file.write("1,")
+                                if x3 == "x3":
+                                    S_file.write("x3+")
+                                if x4 == "x4":
+                                    S_file.write("x4+")
+                                S_file.write("1,")
+                                if y3 == "y3":
+                                    S_file.write("y3+")
+                                if y4 == "y4":
+                                    S_file.write("y4+")
+                                S_file.write("1,")
+                                if z3 == "z3":
+                                    S_file.write("z3+")
+                                if z4 == "z4":
+                                    S_file.write("z4+")
+                                S_file.write("1)")
+
+                                if lc > 1:
+                                    S_file.write("*temp3")
+                                elif lb > 1:
+                                    S_file.write("*temp2")
+                                elif la > 1:
+                                    S_file.write("*temp1")
+                                if ld > 1:
+                                    S_file.write("*Norm_array[x4, y4, z4]")
+                                S_file.write("\n")
+                                S_file.write(indentation+"counter += 1\n")
+                                S_file.write("                    primitives_buffer[i,j,k,l,:"+str(combinations)+"] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:"+str(combinations)+"]\n")
+                            if lc == 0 and ld == 0 and la != 0:
+                                S_file.write(identation_counter+"counter += 1\n")
+                                # For the special case of lc and ld being zero, their contributation can be added after the looping because their contribution is constant.
+                                S_file.write("                    primitives_buffer[i,j,k,l,:"+str(combinations)+"] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:"+str(combinations)+"]*E_buff_2[0,0,0,0]*E_buff_2[0,0,0,1]*E_buff_2[0,0,0,2]\n")
                             S_file.write("    for i in range(0, "+str(combinations)+"):\n")
                             S_file.write("        output_buffer[i] = Contraction_two_electron(primitives_buffer[:,:,:,:,i], Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4)")
                             # For angular moment 0 and 1, the second part of the normalization is the 

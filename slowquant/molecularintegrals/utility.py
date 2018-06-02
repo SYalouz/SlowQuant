@@ -76,7 +76,18 @@ def nuclear_nuclear_repulsion(molecule):
 @jit(nopython=True,cache=True)
 def transform_to_spherical():
     None
-    
+
+
+@jit(float64(float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:], int64, int64, int64, int64, int64, int64), nopython=True, cache=True)
+def ERI_expansion_coeff_sum_X_X_S_S(Ex1, Ey1, Ez1, Ex2, Ey2, Ez2, R, tmax, umax, vmax, taumax, numax, phimax):
+    output = 0.0
+    temp = Ex2[0]*Ey2[0]*Ez2[0]
+    for t in range(0, tmax):
+        for u in range(0, umax):
+            for v in range(0, vmax):
+                output += temp*Ex1[t]*Ey1[u]*Ez1[v]*R[t,u,v]
+    return output
+
 
 @jit(float64(float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:], int64, int64, int64, int64, int64, int64), nopython=True, cache=True)
 def ERI_expansion_coeff_sum(Ex1, Ey1, Ez1, Ex2, Ey2, Ez2, R, tmax, umax, vmax, taumax, numax, phimax):

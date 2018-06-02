@@ -12,16 +12,20 @@ class _Integrals:
     def __init__(self, molecule_object):
         max_angular = 2
         max_comb    = (max_angular+1)*(max_angular+1+1)//2 
+        max_prim    = 10
         self.molecule_obj = molecule_object
         self._output_buffer = np.zeros((max_comb**4)) # Up to p functions
-        self._primitives_buffer = np.zeros((10,10,max_comb**2)) # Up to p functions, and up to 10 primitives
-        self._primitives_buffer_2e = np.zeros((10,10,10,10,max_comb**4)) # Up to p functions, and up to 10 primitives
-        self._E_buffer = np.zeros((max_comb,max_comb,max_comb,3)) # Up to p functions
-        self._E_buffer_2 = np.zeros((max_comb,max_comb,max_comb,3)) # Up to p functions
+        self._primitives_buffer = np.zeros((max_prim,max_prim,max_comb**2)) # Up to p functions, and up to 10 primitives
+        self._primitives_buffer_2e = np.zeros((max_prim,max_prim,max_prim,max_prim,max_comb**4)) # Up to p functions, and up to 10 primitives
+        self._E_buffer_1_e = np.zeros((max_comb,max_comb,max_comb,3))
+        self._E_buffer = np.zeros((max_prim,max_prim,max_comb,max_comb,max_comb,3)) # Up to p functions
+        self._E_buffer_2 = np.zeros((max_prim,max_prim,max_comb,max_comb,max_comb,3)) # Up to p functions
         self._R_buffer = np.zeros((max_angular*4+1,max_angular*4+1,max_angular*4+1,max_angular*4+1)) # Up to p functions
         self._idx_buffer_1e = np.zeros((max_comb**2,2),dtype=int) # Up to p functions
         self._idx_buffer_2e = np.zeros((max_comb**4,4),dtype=int) # Up to p functions
         self._norm_array = np.zeros((max_angular+1,max_angular+1,max_angular+1)) # Up to p functions
+        self._ket_precomputed = np.zeros((5,max_prim,max_prim)) #  p_right, q_right, P_right_x, P_right_y, P_right_z
+        self._bra_precomputed = np.zeros((5,max_prim,max_prim)) #  p_right, q_right, P_right_x, P_right_y, P_right_z
         for i in range(0, max_angular+1):
             for j in range(0, max_angular+1):
                 for k in range(0, max_angular+1):
@@ -46,17 +50,17 @@ class _Integrals:
         Contra_coeffs_1 = self.molecule_obj._basis_shell_list[shell_number_1].pseudo_normed_contract_coeffs
         Contra_coeffs_2 = self.molecule_obj._basis_shell_list[shell_number_2].pseudo_normed_contract_coeffs
         if angular_moment_1 == 0 and angular_moment_2 == 0:
-            return overlap_integral_0_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer)
+            return overlap_integral_0_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
         elif angular_moment_1 == 1 and angular_moment_2 == 0:
-            return overlap_integral_1_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer)
+            return overlap_integral_1_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
         elif angular_moment_1 == 1 and angular_moment_2 == 1:
-            return overlap_integral_1_1_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer)
+            return overlap_integral_1_1_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
         elif angular_moment_1 == 2 and angular_moment_2 == 0:
-            return overlap_integral_2_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer)
+            return overlap_integral_2_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
         elif angular_moment_1 == 2 and angular_moment_2 == 1:
-            return overlap_integral_2_1_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer)
+            return overlap_integral_2_1_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
         elif angular_moment_1 == 2 and angular_moment_2 == 2:
-            return overlap_integral_2_2_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer)
+            return overlap_integral_2_2_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
 
         
     def Kinetic_energy_integral(self, shell1, shell2):
@@ -76,17 +80,17 @@ class _Integrals:
         Contra_coeffs_1 = self.molecule_obj._basis_shell_list[shell_number_1].pseudo_normed_contract_coeffs
         Contra_coeffs_2 = self.molecule_obj._basis_shell_list[shell_number_2].pseudo_normed_contract_coeffs
         if angular_moment_1 == 0 and angular_moment_2 == 0:
-            return nuclear_electron_integral_0_0_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer, self._R_buffer)
+            return nuclear_electron_integral_0_0_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e, self._R_buffer)
         elif angular_moment_1 == 1 and angular_moment_2 == 0:
-            return nuclear_electron_integral_1_0_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer, self._R_buffer)
+            return nuclear_electron_integral_1_0_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e, self._R_buffer)
         elif angular_moment_1 == 1 and angular_moment_2 == 1:
-            return nuclear_electron_integral_1_1_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer, self._R_buffer)
+            return nuclear_electron_integral_1_1_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e, self._R_buffer)
         elif angular_moment_1 == 2 and angular_moment_2 == 0:
-            return nuclear_electron_integral_2_0_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer, self._R_buffer)
+            return nuclear_electron_integral_2_0_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e, self._R_buffer)
         elif angular_moment_1 == 2 and angular_moment_2 == 1:
-            return nuclear_electron_integral_2_1_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer, self._R_buffer)
+            return nuclear_electron_integral_2_1_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e, self._R_buffer)
         elif angular_moment_1 == 2 and angular_moment_2 == 2:
-            return nuclear_electron_integral_2_2_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer, self._R_buffer)
+            return nuclear_electron_integral_2_2_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self.molecule_obj.get_molecule_charge_xyz(), self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e, self._R_buffer)
         
         
     def Electron_electron_repulsion_integral(self, shell_number_1, shell_number_2, shell_number_3, shell_number_4):
@@ -119,45 +123,45 @@ class _Integrals:
         if angular_moment_1 == 0 and angular_moment_2 == 0 and angular_moment_3 == 0 and angular_moment_4 == 0:
             return electron_electron_integral_0_0_0_0_handtuned(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._output_buffer)
         elif angular_moment_1 == 1 and angular_moment_2 == 0 and angular_moment_3 == 0 and angular_moment_4 == 0:
-            return electron_electron_integral_1_0_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_1_0_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 1 and angular_moment_2 == 1 and angular_moment_3 == 0 and angular_moment_4 == 0:
-            return electron_electron_integral_1_1_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_1_1_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 1 and angular_moment_2 == 0 and angular_moment_3 == 1 and angular_moment_4 == 0:
-            return electron_electron_integral_1_0_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_1_0_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 1 and angular_moment_2 == 1 and angular_moment_3 == 1 and angular_moment_4 == 0:
-            return electron_electron_integral_1_1_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_1_1_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 1 and angular_moment_2 == 1 and angular_moment_3 == 1 and angular_moment_4 == 1:
-            return electron_electron_integral_1_1_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_1_1_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 0 and angular_moment_3 == 0 and angular_moment_4 == 0:
-            return electron_electron_integral_2_0_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_0_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 0 and angular_moment_3 == 1 and angular_moment_4 == 0:
-            return electron_electron_integral_2_0_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_0_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 0 and angular_moment_3 == 1 and angular_moment_4 == 1:
-            return electron_electron_integral_2_0_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_0_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 0 and angular_moment_3 == 2 and angular_moment_4 == 0:
-            return electron_electron_integral_2_0_2_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_0_2_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 1 and angular_moment_3 == 0 and angular_moment_4 == 0:
-            return electron_electron_integral_2_1_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_1_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 1 and angular_moment_3 == 1 and angular_moment_4 == 0:
-            return electron_electron_integral_2_1_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_1_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 1 and angular_moment_3 == 1 and angular_moment_4 == 1:
-            return electron_electron_integral_2_1_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_1_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 1 and angular_moment_3 == 2 and angular_moment_4 == 0:
-            return electron_electron_integral_2_1_2_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_1_2_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 1 and angular_moment_3 == 2 and angular_moment_4 == 1:
-            return electron_electron_integral_2_1_2_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_1_2_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 2 and angular_moment_3 == 0 and angular_moment_4 == 0:
-            return electron_electron_integral_2_2_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_2_0_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 2 and angular_moment_3 == 1 and angular_moment_4 == 0:
-            return electron_electron_integral_2_2_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_2_1_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 2 and angular_moment_3 == 1 and angular_moment_4 == 1:
-            return electron_electron_integral_2_2_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_2_1_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 2 and angular_moment_3 == 2 and angular_moment_4 == 0:
-            return electron_electron_integral_2_2_2_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_2_2_0_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 2 and angular_moment_3 == 2 and angular_moment_4 == 1:
-            return electron_electron_integral_2_2_2_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_2_2_1_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
         elif angular_moment_1 == 2 and angular_moment_2 == 2 and angular_moment_3 == 2 and angular_moment_4 == 2:
-            return electron_electron_integral_2_2_2_2_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array)
+            return electron_electron_integral_2_2_2_2_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, self._primitives_buffer_2e, self._E_buffer, self._E_buffer_2, self._R_buffer, self._output_buffer, self._norm_array, self._ket_precomputed)
             
             
     def Nuclear_nuclear_repulsion(self):

@@ -29,6 +29,7 @@ def write_electron_electron(max_angular):
     S_file.write("from slowquant.molecularintegrals.utility import ERI_expansion_coeff_sum, Contraction_two_electron, ERI_expansion_coeff_sum_X_X_S_S\n")
     S_file.write("from slowquant.molecularintegrals.expansion_coefficients import *\n")
     S_file.write("from slowquant.molecularintegrals.hermite_integral import *\n")
+    S_file.write("from slowquant.molecularintegrals.bra_expansion_coeffs import *\n")
     S_file.write("\n\n")
     for la in range(max_angular+1):
         for lb in range(max_angular+1):
@@ -37,15 +38,14 @@ def write_electron_electron(max_angular):
                     for ld in range(max_angular+1):
                         if lc >= ld and la*(la+1)//2+lb >= lc*(lc+1)//2+ld:
                             combinations = (la+1)*((la+1)+1)//2*(lb+1)*((lb+1)+1)//2*(lc+1)*((lc+1)+1)//2*(ld+1)*((ld+1)+1)//2
-                            S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)\n")
-                            S_file.write("def electron_electron_integral_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, ket_array):\n")
-                            S_file.write("    number_primitive_1 = gauss_exp_1.shape[0]\n")
-                            S_file.write("    number_primitive_2 = gauss_exp_2.shape[0]\n")
-                            S_file.write("    number_primitive_3 = gauss_exp_3.shape[0]\n")
-                            S_file.write("    number_primitive_4 = gauss_exp_4.shape[0]\n")
+                            S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)\n")
+                            S_file.write("def electron_electron_integral_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, bra_array, ket_array):\n")
+                            S_file.write("    number_primitive_1 = Contra_coeffs_1.shape[0]\n")
+                            S_file.write("    number_primitive_2 = Contra_coeffs_2.shape[0]\n")
+                            S_file.write("    number_primitive_3 = Contra_coeffs_3.shape[0]\n")
+                            S_file.write("    number_primitive_4 = Contra_coeffs_4.shape[0]\n")
                             #S_file.write("    pi = 3.141592653589793238462643383279\n")
                             #S_file.write("    pi52 = 2.0*pi**(5.0/2.0)\n")
-                            S_file.write("    XAB_left = Coord_1 - Coord_2\n")
                             S_file.write("    XAB_right = Coord_3 - Coord_4\n")
                             S_file.write("    for k in range(0, number_primitive_3):\n")
                             S_file.write("        gauss_exp_1_right = gauss_exp_3[k]\n")
@@ -62,16 +62,10 @@ def write_electron_electron(max_angular):
                                 S_file.write("            p12_right = 1.0/(2.0*p_right)\n")
                                 S_file.write("            E_buff_2[k,l] = E_"+str(lc)+"_"+str(ld)+"_"+str(lc+ld)+"(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2[k,l])\n")
                             S_file.write("    for i in range(0, number_primitive_1):\n")
-                            S_file.write("        gauss_exp_1_left = gauss_exp_1[i]\n")
                             S_file.write("        for j in range(0, number_primitive_2):\n")
-                            S_file.write("            gauss_exp_2_left = gauss_exp_2[j]\n")
-                            S_file.write("            p_left = gauss_exp_1_left + gauss_exp_2_left\n")
-                            S_file.write("            q_left = gauss_exp_1_left * gauss_exp_2_left / p_left\n")
-                            S_file.write("            P_left = (gauss_exp_1_left*Coord_1 + gauss_exp_2_left*Coord_2) / p_left\n")
-                            S_file.write("            XPA_left = P_left - Coord_1\n")
-                            S_file.write("            XPB_left = P_left - Coord_2\n")
-                            S_file.write("            p12_left = 1.0/(2.0*p_left)\n")
-                            S_file.write("            E_buff_1 = E_"+str(la)+"_"+str(lb)+"_"+str(la+lb)+"(q_left, p12_left, XAB_left, XPA_left, XPB_left, E_buff_1)\n")
+                            S_file.write("            p_left = bra_array[0,i,j]\n")
+                            S_file.write("            q_left = bra_array[1,i,j]\n")
+                            S_file.write("            P_left = bra_array[2:5,i,j]\n")
                             S_file.write("            for k in range(0, number_primitive_3):\n")
                             S_file.write("                for l in range(0, number_primitive_4):\n")
                             S_file.write("                    p_right = ket_array[0,k,l]\n")
@@ -137,9 +131,9 @@ def write_electron_electron(max_angular):
                                 x4, y4, z4 = "0", "0", "0"
                                 
                             if lc == 0 and ld == 0:
-                                S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum_X_X_S_S(E_buff_1["+x1+","+x2+",:,0],E_buff_1["+y1+","+y2+",:,1],E_buff_1["+z1+","+z2+",:,2],E_buff_2[k,l,"+x3+","+x4+",:,0],E_buff_2[k,l,"+y3+","+y4+",:,1],E_buff_2[k,l,"+z3+","+z4+",:,2],R_array,")
+                                S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum_X_X_S_S(E_buff_1[i,j,"+x1+","+x2+",:,0],E_buff_1[i,j,"+y1+","+y2+",:,1],E_buff_1[i,j,"+z1+","+z2+",:,2],E_buff_2[k,l,"+x3+","+x4+",:,0],E_buff_2[k,l,"+y3+","+y4+",:,1],E_buff_2[k,l,"+z3+","+z4+",:,2],R_array,")
                             else:
-                                S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1["+x1+","+x2+",:,0],E_buff_1["+y1+","+y2+",:,1],E_buff_1["+z1+","+z2+",:,2],E_buff_2[k,l,"+x3+","+x4+",:,0],E_buff_2[k,l,"+y3+","+y4+",:,1],E_buff_2[k,l,"+z3+","+z4+",:,2],R_array,")
+                                S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1[i,j,"+x1+","+x2+",:,0],E_buff_1[i,j,"+y1+","+y2+",:,1],E_buff_1[i,j,"+z1+","+z2+",:,2],E_buff_2[k,l,"+x3+","+x4+",:,0],E_buff_2[k,l,"+y3+","+y4+",:,1],E_buff_2[k,l,"+z3+","+z4+",:,2],R_array,")
                             # Just an ugly way to make the generated code abit nice, since x y z are always zero if angular moment is 0.
                             if x1 == "x1":
                                 S_file.write("x1+")
@@ -183,8 +177,9 @@ def write_electron_electron(max_angular):
                             S_file.write("\n")
                             S_file.write(indentation+"counter += 1\n")
                             S_file.write("                    primitives_buffer[i,j,k,l,:"+str(combinations)+"] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:"+str(combinations)+"]\n")
-                            #S_file.write("    for i in range(0, "+str(combinations)+"):\n")
-                            #S_file.write("        output_buffer[i] = Contraction_two_electron(primitives_buffer[:,:,:,:,i], Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4)")
+                            S_file.write("    for i in range(0, "+str(combinations)+"):\n")
+                            S_file.write("        output_buffer[i] = Contraction_two_electron(primitives_buffer[:,:,:,:,i], Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4)")
+                            """
                             S_file.write("    output_buffer[:"+str(combinations)+"] = 0.0\n")
                             S_file.write("    for i in range(number_primitive_1):\n")
                             S_file.write("        temp1 = Contra_coeffs_1[i]\n")
@@ -197,7 +192,7 @@ def write_electron_electron(max_angular):
                             S_file.write("                   for m in range("+str(combinations)+"):\n")
                             S_file.write("                       output_buffer[m] += primitives_buffer[i,j,k,l,m]*temp4\n")
                             S_file.write("    return output_buffer")
-                            
+                            """
                             # For angular moment 0 and 1, the second part of the normalization is the 
                             #  same for all of the pritimives. Therefore it can be applied after contraction.
                             pi = 3.141592653589793238462643383279
@@ -221,5 +216,5 @@ def write_electron_electron(max_angular):
                                 total_same_norm *= PsuedoNorm2(1,0,0)
                             S_file.write("*"+str(total_same_norm))
                             S_file.write("\n")
-                            #S_file.write("    return output_buffer\n")
+                            S_file.write("    return output_buffer\n")
                             S_file.write("\n\n")

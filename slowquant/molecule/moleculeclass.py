@@ -91,6 +91,7 @@ class _Molecule:
     
     def set_basis_set(self, basisname):
         self.__current_basis_idx = 0
+        self.__current_shell_idx = 0
         self._basis_shell_list = []
         for i in range(self.get_number_atoms()):
             basisfile = np.genfromtxt(self.this_file_location+"/basissets/"+str(basisname)+'.csv', dtype=str, delimiter=';')
@@ -133,21 +134,24 @@ class _Molecule:
         Function to append new basis function shell the list of basis function shell objects.
         """
         if bf_type == "S":
-            self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 0, np.array([self.__current_basis_idx],dtype=int)))
+            self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 0, np.array([self.__current_basis_idx],dtype=int), self.__current_shell_idx))
             self.__current_basis_idx += 1
+            self.__current_shell_idx += 1
         elif bf_type == "P":
             self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 1, np.array([self.__current_basis_idx, 
                                                                                                          self.__current_basis_idx+1, 
-                                                                                                         self.__current_basis_idx+2],dtype=int)))
+                                                                                                         self.__current_basis_idx+2],dtype=int), self.__current_shell_idx))
             self.__current_basis_idx += 3
+            self.__current_shell_idx += 1
         elif bf_type == "D":
             self._basis_shell_list.append(basis_shells(xyz, atom_idx, exp, contract_coeffs, 2, np.array([self.__current_basis_idx, 
                                                                                                          self.__current_basis_idx+1,
                                                                                                          self.__current_basis_idx+2,
                                                                                                          self.__current_basis_idx+3,
                                                                                                          self.__current_basis_idx+4,
-                                                                                                         self.__current_basis_idx+5],dtype=int)))
+                                                                                                         self.__current_basis_idx+5],dtype=int), self.__current_shell_idx))
             self.__current_basis_idx += 6
+            self.__current_shell_idx += 1
                             
     
 class Atom:
@@ -161,7 +165,7 @@ class Atom:
         
         
 class basis_shells:
-    def __init__(self, xyz, atom_idx, exp, contract_coeffs, ang_xyz, basis_idx):
+    def __init__(self, xyz, atom_idx, exp, contract_coeffs, ang_xyz, basis_idx, idx_shell):
         self.coord = xyz
         self.atom_idx = atom_idx
         self.exponents = exp
@@ -169,3 +173,4 @@ class basis_shells:
         self.angular_moment = ang_xyz
         self.basis_function_idx = basis_idx
         self.pseudo_normed_contract_coeffs = False
+        self.shell_idx = idx_shell

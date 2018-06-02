@@ -4,12 +4,14 @@ import data.generator.generate_hermite_integral as genHerInt
 import data.generator.generate_electron_electron_MD4 as genERI
 import data.generator.generate_nuclear_electron_MD2 as genNucEl
 import data.generator.generate_overlap_MD as genOver
+import data.generator.generate_bra_expansion_coeffs as genbraexp
 max_angular = 1
 genExpCoeff.generate_expansion_coefficients(max_angular)
 genHerInt.write_hermite_integral(max_angular)
 genERI.write_electron_electron(max_angular)
 genNucEl.write_nuclear_electron(max_angular)
 genOver.write_overlap(max_angular)
+genbraexp.write_bra_expansion_coeffs(max_angular)
 from slowquant import SlowQuant as sq
 
 def test_overlap_up_to_p():

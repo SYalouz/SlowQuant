@@ -26,7 +26,7 @@ def write_electron_electron(max_angular):
     S_file.write("import numpy as np\n")
     S_file.write("from numpy import exp\n")
     S_file.write("from numba import jit, float64\n")
-    S_file.write("from slowquant.molecularintegrals.utility import ERI_expansion_coeff_sum, Contraction_two_electron\n")
+    S_file.write("from slowquant.molecularintegrals.utility import ERI_expansion_coeff_sum, Contraction_two_electron, ERI_expansion_coeff_sum_X_X_S_S\n")
     S_file.write("from slowquant.molecularintegrals.expansion_coefficients import *\n")
     S_file.write("from slowquant.molecularintegrals.hermite_integral import *\n")
     S_file.write("\n\n")
@@ -37,8 +37,8 @@ def write_electron_electron(max_angular):
                     for ld in range(max_angular+1):
                         if lc >= ld and la*(la+1)//2+lb >= lc*(lc+1)//2+ld:
                             combinations = (la+1)*((la+1)+1)//2*(lb+1)*((lb+1)+1)//2*(lc+1)*((lc+1)+1)//2*(ld+1)*((ld+1)+1)//2
-                            S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:], float64[:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:]), nopython=True, cache=True)\n")
-                            S_file.write("def electron_electron_integral_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array):\n")
+                            S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)\n")
+                            S_file.write("def electron_electron_integral_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"_MD4(Coord_1, Coord_2, Coord_3, Coord_4, gauss_exp_1, gauss_exp_2, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, ket_array):\n")
                             S_file.write("    number_primitive_1 = gauss_exp_1.shape[0]\n")
                             S_file.write("    number_primitive_2 = gauss_exp_2.shape[0]\n")
                             S_file.write("    number_primitive_3 = gauss_exp_3.shape[0]\n")
@@ -47,6 +47,20 @@ def write_electron_electron(max_angular):
                             #S_file.write("    pi52 = 2.0*pi**(5.0/2.0)\n")
                             S_file.write("    XAB_left = Coord_1 - Coord_2\n")
                             S_file.write("    XAB_right = Coord_3 - Coord_4\n")
+                            S_file.write("    for k in range(0, number_primitive_3):\n")
+                            S_file.write("        gauss_exp_1_right = gauss_exp_3[k]\n")
+                            S_file.write("        for l in range(0, number_primitive_4):\n")
+                            S_file.write("            gauss_exp_2_right = gauss_exp_4[l]\n")
+                            S_file.write("            p_right = ket_array[0,k,l] = gauss_exp_1_right + gauss_exp_2_right\n")
+                            S_file.write("            q_right = ket_array[1,k,l] = gauss_exp_1_right * gauss_exp_2_right / p_right\n")
+                            S_file.write("            P_right = ket_array[2:5,k,l] = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right\n")
+                            if lc == 0 and ld == 0:
+                                S_file.write("            E_buff_2[k,l,0,0,0,:] = exp(-q_right*XAB_right*XAB_right)\n")
+                            else:
+                                S_file.write("            XPA_right = P_right - Coord_3\n")
+                                S_file.write("            XPB_right = P_right - Coord_4\n")
+                                S_file.write("            p12_right = 1.0/(2.0*p_right)\n")
+                                S_file.write("            E_buff_2[k,l] = E_"+str(lc)+"_"+str(ld)+"_"+str(lc+ld)+"(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2[k,l])\n")
                             S_file.write("    for i in range(0, number_primitive_1):\n")
                             S_file.write("        gauss_exp_1_left = gauss_exp_1[i]\n")
                             S_file.write("        for j in range(0, number_primitive_2):\n")
@@ -59,22 +73,13 @@ def write_electron_electron(max_angular):
                             S_file.write("            p12_left = 1.0/(2.0*p_left)\n")
                             S_file.write("            E_buff_1 = E_"+str(la)+"_"+str(lb)+"_"+str(la+lb)+"(q_left, p12_left, XAB_left, XPA_left, XPB_left, E_buff_1)\n")
                             S_file.write("            for k in range(0, number_primitive_3):\n")
-                            S_file.write("                gauss_exp_1_right = gauss_exp_3[k]\n")
                             S_file.write("                for l in range(0, number_primitive_4):\n")
-                            S_file.write("                    gauss_exp_2_right = gauss_exp_4[l]\n")
-                            S_file.write("                    p_right = gauss_exp_1_right + gauss_exp_2_right\n")
-                            S_file.write("                    q_right = gauss_exp_1_right * gauss_exp_2_right / p_right\n")
-                            S_file.write("                    P_right = (gauss_exp_1_right*Coord_3 + gauss_exp_2_right*Coord_4) / p_right\n")
+                            S_file.write("                    p_right = ket_array[0,k,l]\n")
+                            S_file.write("                    q_right = ket_array[1,k,l]\n")
+                            S_file.write("                    P_right = ket_array[2:5,k,l]\n")
                             S_file.write("                    alpha = p_left*p_right/(p_left+p_right)\n")
                             S_file.write("                    XPC, YPC, ZPC = P_left - P_right\n")
                             S_file.write("                    RPC = ((XPC)**2+(YPC)**2+(ZPC)**2)**0.5\n")
-                            if lc == 0 and ld == 0:
-                                S_file.write("                    E_buff_2[0,0,0,:] = exp(-q_right*XAB_right*XAB_right)\n")
-                            else:
-                                S_file.write("                    XPA_right = P_right - Coord_3\n")
-                                S_file.write("                    XPB_right = P_right - Coord_4\n")
-                                S_file.write("                    p12_right = 1.0/(2.0*p_right)\n")
-                                S_file.write("                    E_buff_2 = E_"+str(lc)+"_"+str(ld)+"_"+str(lc+ld)+"(q_right, p12_right, XAB_right, XPA_right, XPB_right, E_buff_2)\n")
                             S_file.write("                    R_array = R_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"(alpha, XPC, YPC, ZPC, RPC, R_buffer)\n")
                             S_file.write("                    counter = 0\n")
                             if lc == 0 and ld == 0 and la != 0:
@@ -131,74 +136,68 @@ def write_electron_electron(max_angular):
                             else:
                                 x4, y4, z4 = "0", "0", "0"
                                 
-                            if lc == 0 and ld == 0 and la != 0:
-                                # If the two last angular are zero, then ERI_expansion_coeff_sum() because three of the loops will be 1 long.
-                                #  it gives to much overhead using calling loops of length zero.
-                                # Therefore the code is put into the Integral directly in this special case
-                                identation_counter = indentation
-                                if lb == 0:
-                                    S_file.write(indentation+"for t in range(0, x1+1):\n")
-                                    S_file.write(indentation+"    for u in range(0, y1+1):\n")
-                                    S_file.write(indentation+"        for v in range(0, z1+1):\n")
-                                    indentation = indentation + "            "
-                                    S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] += E_buff_1[x1,0,t,0]*E_buff_1[y1,0,u,1]*E_buff_1[z1,0,v,2]*R_array[t,u,v]\n")
-                                else:
-                                    S_file.write(indentation+"for t in range(0, x1+x2+1):\n")
-                                    S_file.write(indentation+"    for u in range(0, y1+y2+1):\n")
-                                    S_file.write(indentation+"        for v in range(0, z1+z2+1):\n")
-                                    indentation = indentation + "            "
-                                    S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] += E_buff_1[x1,x2,t,0]*E_buff_1[y1,y2,u,1]*E_buff_1[z1,z2,v,2]*R_array[t,u,v]\n")
+                            if lc == 0 and ld == 0:
+                                S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum_X_X_S_S(E_buff_1["+x1+","+x2+",:,0],E_buff_1["+y1+","+y2+",:,1],E_buff_1["+z1+","+z2+",:,2],E_buff_2[k,l,"+x3+","+x4+",:,0],E_buff_2[k,l,"+y3+","+y4+",:,1],E_buff_2[k,l,"+z3+","+z4+",:,2],R_array,")
                             else:
-                                S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1["+x1+","+x2+",:,0],E_buff_1["+y1+","+y2+",:,1],E_buff_1["+z1+","+z2+",:,2],E_buff_2["+x3+","+x4+",:,0],E_buff_2["+y3+","+y4+",:,1],E_buff_2["+z3+","+z4+",:,2],R_array,")
-                                # Just an ugly way to make the generated code abit nice, since x y z are always zero if angular moment is 0.
-                                if x1 == "x1":
-                                    S_file.write("x1+")
-                                if x2 == "x2":
-                                    S_file.write("x2+")
-                                S_file.write("1,")
-                                if y1 == "y1":
-                                    S_file.write("y1+")
-                                if y2 == "y2":
-                                    S_file.write("y2+")
-                                S_file.write("1,")
-                                if z1 == "z1":
-                                    S_file.write("z1+")
-                                if z2 == "z2":
-                                    S_file.write("z2+")
-                                S_file.write("1,")
-                                if x3 == "x3":
-                                    S_file.write("x3+")
-                                if x4 == "x4":
-                                    S_file.write("x4+")
-                                S_file.write("1,")
-                                if y3 == "y3":
-                                    S_file.write("y3+")
-                                if y4 == "y4":
-                                    S_file.write("y4+")
-                                S_file.write("1,")
-                                if z3 == "z3":
-                                    S_file.write("z3+")
-                                if z4 == "z4":
-                                    S_file.write("z4+")
-                                S_file.write("1)")
+                                S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1["+x1+","+x2+",:,0],E_buff_1["+y1+","+y2+",:,1],E_buff_1["+z1+","+z2+",:,2],E_buff_2[k,l,"+x3+","+x4+",:,0],E_buff_2[k,l,"+y3+","+y4+",:,1],E_buff_2[k,l,"+z3+","+z4+",:,2],R_array,")
+                            # Just an ugly way to make the generated code abit nice, since x y z are always zero if angular moment is 0.
+                            if x1 == "x1":
+                                S_file.write("x1+")
+                            if x2 == "x2":
+                                S_file.write("x2+")
+                            S_file.write("1,")
+                            if y1 == "y1":
+                                S_file.write("y1+")
+                            if y2 == "y2":
+                                S_file.write("y2+")
+                            S_file.write("1,")
+                            if z1 == "z1":
+                                S_file.write("z1+")
+                            if z2 == "z2":
+                                S_file.write("z2+")
+                            S_file.write("1,")
+                            if x3 == "x3":
+                                S_file.write("x3+")
+                            if x4 == "x4":
+                                S_file.write("x4+")
+                            S_file.write("1,")
+                            if y3 == "y3":
+                                S_file.write("y3+")
+                            if y4 == "y4":
+                                S_file.write("y4+")
+                            S_file.write("1,")
+                            if z3 == "z3":
+                                S_file.write("z3+")
+                            if z4 == "z4":
+                                S_file.write("z4+")
+                            S_file.write("1)")
 
-                                if lc > 1:
-                                    S_file.write("*temp3")
-                                elif lb > 1:
-                                    S_file.write("*temp2")
-                                elif la > 1:
-                                    S_file.write("*temp1")
-                                if ld > 1:
-                                    S_file.write("*Norm_array[x4, y4, z4]")
-                                S_file.write("\n")
-                                S_file.write(indentation+"counter += 1\n")
-                                S_file.write("                    primitives_buffer[i,j,k,l,:"+str(combinations)+"] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:"+str(combinations)+"]\n")
-                            if lc == 0 and ld == 0 and la != 0:
-                                S_file.write(identation_counter+"counter += 1\n")
-                                # For the special case of lc and ld being zero, their contributation can be added after the looping because their contribution is constant.
-                                S_file.write("                    primitives_buffer[i,j,k,l,:"+str(combinations)+"] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:"+str(combinations)+"]*E_buff_2[0,0,0,0]*E_buff_2[0,0,0,1]*E_buff_2[0,0,0,2]\n")
-                            S_file.write("    for i in range(0, "+str(combinations)+"):\n")
-                            S_file.write("        output_buffer[i] = Contraction_two_electron(primitives_buffer[:,:,:,:,i], Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4)")
+                            if lc > 1:
+                                S_file.write("*temp3")
+                            elif lb > 1:
+                                S_file.write("*temp2")
+                            elif la > 1:
+                                S_file.write("*temp1")
+                            if ld > 1:
+                                S_file.write("*Norm_array[x4, y4, z4]")
+                            S_file.write("\n")
+                            S_file.write(indentation+"counter += 1\n")
+                            S_file.write("                    primitives_buffer[i,j,k,l,:"+str(combinations)+"] = 1.0/(p_left*p_right*(p_left+p_right)**0.5)*primitives_buffer[i,j,k,l,:"+str(combinations)+"]\n")
+                            #S_file.write("    for i in range(0, "+str(combinations)+"):\n")
+                            #S_file.write("        output_buffer[i] = Contraction_two_electron(primitives_buffer[:,:,:,:,i], Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4)")
+                            S_file.write("    output_buffer[:"+str(combinations)+"] = 0.0\n")
+                            S_file.write("    for i in range(number_primitive_1):\n")
+                            S_file.write("        temp1 = Contra_coeffs_1[i]\n")
+                            S_file.write("        for j in range(number_primitive_2):\n")
+                            S_file.write("            temp2 = temp1*Contra_coeffs_2[j]\n")
+                            S_file.write("            for k in range(number_primitive_3):\n")
+                            S_file.write("               temp3 = temp2*Contra_coeffs_3[k]\n")
+                            S_file.write("               for l in range(number_primitive_4):\n")
+                            S_file.write("                   temp4 = temp3*Contra_coeffs_4[l]\n")
+                            S_file.write("                   for m in range("+str(combinations)+"):\n")
+                            S_file.write("                       output_buffer[m] += primitives_buffer[i,j,k,l,m]*temp4\n")
+                            S_file.write("    return output_buffer")
+                            
                             # For angular moment 0 and 1, the second part of the normalization is the 
                             #  same for all of the pritimives. Therefore it can be applied after contraction.
                             pi = 3.141592653589793238462643383279
@@ -222,5 +221,5 @@ def write_electron_electron(max_angular):
                                 total_same_norm *= PsuedoNorm2(1,0,0)
                             S_file.write("*"+str(total_same_norm))
                             S_file.write("\n")
-                            S_file.write("    return output_buffer\n")
+                            #S_file.write("    return output_buffer\n")
                             S_file.write("\n\n")

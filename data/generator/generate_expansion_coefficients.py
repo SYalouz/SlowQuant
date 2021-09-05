@@ -106,4 +106,24 @@ def generate_expansion_coefficients(max_angular_moment):
                             S_file.write("    "+step+"\n")
                         S_file.write("    return E\n")
                         S_file.write("\n\n")
-                                    
+        for lb in range(la+1, la+1+2): # kinetic energy integrals
+            if la+lb <= 2*max_angular_moment + 2:
+                for lc in range(0, la+lb+1): # keeping the lc part incase needed for future integrals
+                    if lc == 0:
+                        S_file.write("@jit(float64[:,:,:,:](float64, float64, float64[:], float64[:], float64[:], float64[:,:,:,:]), nopython=True, cache=True)\n")
+                        S_file.write("def E_"+str(la)+"_"+str(lb)+"_"+str(lc)+"(q, p12, XAB, XPA, XPB, E):\n")
+                        steps = []
+                        for i in range(la, -1, -1):
+                            for j in range(lb, -1, -1):
+                                for t in range(lc+1):
+                                    if  i <= la and j <= lb and i+j >= t and i+j <= la+lb:
+                                        E(i, j, t)
+                        unique_steps = []
+                        for k in range(-1, -len(steps)-1, -1):
+                            if steps[k] not in unique_steps:
+                                unique_steps.append(steps[k])
+                        for step in unique_steps:
+                            S_file.write("    "+step+"\n")
+                        S_file.write("    return E\n")
+                        S_file.write("\n\n")
+                                            

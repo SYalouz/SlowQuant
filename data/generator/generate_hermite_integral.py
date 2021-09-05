@@ -5,7 +5,10 @@ def R(t, u, v, n):
     return_check_v = [0,0]
     return_check_u = [0,0]
     return_check_t = [0,0]
-    output = "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = "
+    if n == 0:
+        output = "R["+str(t)+","+str(u)+","+str(v)+"] = "
+    else:
+        output = "R_"+str(t)+"_"+str(u)+"_"+str(v)+"_"+str(n)+" = "
     if t == 0 and u == 0 and v == 0:
         if n == 0:
             output += "boys_function_n_zero(p*RPC*RPC)"
@@ -16,38 +19,47 @@ def R(t, u, v, n):
     elif t == 0 and u == 0:
         if v > 1:
             if v-1 == 1:
-                output += "R["+str(t)+","+str(u)+","+str(v-2)+","+str(n+1)+"]"
+                output += "R_"+str(t)+"_"+str(u)+"_"+str(v-2)+"_"+str(n+1)
             else:
-                output += str(v-1)+".0 * R["+str(t)+","+str(u)+","+str(v-2)+","+str(n+1)+"]"
+                if v-1 > 1:
+                    output += str(v-1)+".0 * R_"+str(t)+"_"+str(u)+"_"+str(v-2)+"_"+str(n+1)
+                else:
+                    output += "R_"+str(t)+"_"+str(u)+"_"+str(v-2)+"_"+str(n+1)
             return_check_v[0] = 1
-        if output != "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = ":
+        if output != "R["+str(t)+","+str(u)+","+str(v)+"] = " and output != "R_"+str(t)+"_"+str(u)+"_"+str(v)+"_"+str(n)+" = ":
             output += " + "
-        output += "ZPC * R["+str(t)+","+str(u)+","+str(v-1)+","+str(n+1)+"]"
+        output += "ZPC * R_"+str(t)+"_"+str(u)+"_"+str(v-1)+"_"+str(n+1)
         return_check_v[1] = 1
     elif t == 0:
         if u > 1:
             if u-1 == 1:
-                output += "R["+str(t)+","+str(u-2)+","+str(v)+","+str(n+1)+"]"
+                output += "R_"+str(t)+"_"+str(u-2)+"_"+str(v)+"_"+str(n+1)
             else:
-                output += str(u-1)+".0 * R["+str(t)+","+str(u-2)+","+str(v)+","+str(n+1)+"]"
+                if u-1 > 1:
+                    output += str(u-1)+".0 * R_"+str(t)+"_"+str(u-2)+"_"+str(v)+"_"+str(n+1)
+                else:
+                    output += "R_"+str(t)+"_"+str(u-2)+"_"+str(v)+"_"+str(n+1)
             return_check_u[0] = 1
-        if output != "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = ":
+        if output != "R["+str(t)+","+str(u)+","+str(v)+"] = " and output != "R_"+str(t)+"_"+str(u)+"_"+str(v)+"_"+str(n)+" = ":
             output += " + "
-        output += "YPC * R["+str(t)+","+str(u-1)+","+str(v)+","+str(n+1)+"]"
+        output += "YPC * R_"+str(t)+"_"+str(u-1)+"_"+str(v)+"_"+str(n+1)
         return_check_u[1] = 1
     else:
         if t > 1:
             if t-1 == 0:
-                output += "R["+str(t-2)+","+str(u)+","+str(v)+","+str(n+1)+"]"
+                output += "R_"+str(t-2)+"_"+str(u)+"_"+str(v)+"_"+str(n+1)
             else:
-                output += str(t-1)+".0 * R["+str(t-2)+","+str(u)+","+str(v)+","+str(n+1)+"]"
+                if t-1 > 1:
+                    output += str(t-1)+".0 * R_"+str(t-2)+"_"+str(u)+"_"+str(v)+"_"+str(n+1)
+                else:
+                    output += "R_"+str(t-2)+"_"+str(u)+"_"+str(v)+"_"+str(n+1)
             return_check_t[0] = 1
-        if output != "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = ":
+        if output != "R["+str(t)+","+str(u)+","+str(v)+"] = " and output != "R_"+str(t)+"_"+str(u)+"_"+str(v)+"_"+str(n)+" = ":
             output += " + "
-        output += "XPC * R["+str(t-1)+","+str(u)+","+str(v)+","+str(n+1)+"]"
+        output += "XPC * R_"+str(t-1)+"_"+str(u)+"_"+str(v)+"_"+str(n+1)
         return_check_t[1] = 1
     
-    if output != "R["+str(t)+","+str(u)+","+str(v)+","+str(n)+"] = ":
+    if output != "R["+str(t)+","+str(u)+","+str(v)+"] = " and output != "R_"+str(t)+"_"+str(u)+"_"+str(v)+"_"+str(n)+" = ":
         steps.append(output)
     if return_check_v == [1,1]:
         return R(t,u,v-2,n+1) + R(t,u,v-1,n+1)
@@ -91,7 +103,45 @@ def write_hermite_integral(max_angular):
                             for i in range(-1, -len(steps)-1, -1):
                                 if steps[i] not in unique_steps:
                                     unique_steps.append(steps[i])
-                            for step in unique_steps:
+                                   
+                            
+                            for i in range(0, len(unique_steps)):
+                                if "[" not in unique_steps[i]:
+                                    right_side = unique_steps[i].split(" = ")[0]
+                                    left_side = unique_steps[i].split(" = ")[1]
+                                    counter = 0
+                                    for j in unique_steps:
+                                        if right_side in j.split(" = ")[1]:
+                                            counter += 1
+                                            if counter > 1:
+                                                break
+                                    if counter == 1:
+                                        for j in range(0 ,len(unique_steps)):
+                                            if right_side in unique_steps[j].split(" = ")[1]:
+                                                unique_steps[j] = unique_steps[j].replace(right_side, "("+left_side+")")
+                                                break
+
+                            term_dict = {}
+                            for i in unique_steps:
+                                term = i.split(" = ")[0]
+                                if "[" not in i:
+                                    if term not in term_dict:
+                                        term_dict[term] = 0
+                            for term in term_dict:
+                                for i in unique_steps:
+                                    if term in i.split(" = ")[1]:
+                                        term_dict[term] += 1
+                            new_list = []
+                            for i in unique_steps:
+                                if "["  in i:
+                                    new_list.append(i)
+                                elif term_dict[i.split(" = ")[0]] != 0:
+                                    if term_dict[i.split(" = ")[0]] == 1:
+                                        print("Oh no")
+                                    new_list.append(i)
+                                    
+                                    
+                            for step in new_list:
                                 S_file.write("    "+step+"\n")
                             S_file.write("    return R[:,:,:,0]\n")
                             S_file.write("\n\n")

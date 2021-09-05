@@ -1,9 +1,15 @@
 import numpy as np
+<<<<<<< HEAD
 from numba import jit, float64
 from slowquant.molecularintegrals.expansion_coefficients import *
 from slowquant.molecularintegrals.utility import Contraction_one_electron
 
 @jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:,:]), nopython=True, cache=True)
+=======
+from slowquant.molecularintegrals.expansion_coefficients import *
+from slowquant.molecularintegrals.utility import Contraction_one_electron
+
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def overlap_integral_0_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, output_buffer, primitives_buffer, Norm_array, E_buffer):
     number_primitive_1 = gauss_exp_1.shape[0]
     number_primitive_2 = gauss_exp_2.shape[0]
@@ -35,7 +41,10 @@ def overlap_integral_0_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_c
     return output_buffer
 
 
+<<<<<<< HEAD
 @jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:,:]), nopython=True, cache=True)
+=======
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def overlap_integral_1_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, output_buffer, primitives_buffer, Norm_array, E_buffer):
     number_primitive_1 = gauss_exp_1.shape[0]
     number_primitive_2 = gauss_exp_2.shape[0]
@@ -67,7 +76,10 @@ def overlap_integral_1_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_c
     return output_buffer
 
 
+<<<<<<< HEAD
 @jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:,:]), nopython=True, cache=True)
+=======
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def overlap_integral_1_1_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, output_buffer, primitives_buffer, Norm_array, E_buffer):
     number_primitive_1 = gauss_exp_1.shape[0]
     number_primitive_2 = gauss_exp_2.shape[0]

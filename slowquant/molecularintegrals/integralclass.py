@@ -6,7 +6,11 @@ from slowquant.molecularintegrals.nuclear_electron_MD2 import *
 from slowquant.molecularintegrals.electron_electron_MD4 import *
 from slowquant.molecularintegrals.handtuned_integrals import *
 from slowquant.molecularintegrals.bra_expansion_coeffs import *
+<<<<<<< HEAD
 #from slowquant.molecularintegrals.kinetic_energy_MD import *
+=======
+from slowquant.molecularintegrals.kinetic_energy_MD import *
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 from slowquant.molecularintegrals.utility import put_in_array_ERI, make_idx_list_two_electron, make_idx_list_one_electron, PsuedoNorm, PsuedoNorm2
 
 
@@ -19,8 +23,13 @@ class _Integrals:
         self._output_buffer = np.zeros((max_comb**4)) 
         self._primitives_buffer = np.zeros((max_prim,max_prim,max_comb**2))
         self._primitives_buffer_2e = np.zeros((max_prim,max_prim,max_prim,max_prim,max_comb**4)) 
+<<<<<<< HEAD
         self._E_buffer_1_e = np.zeros((max_angular,max_angular+2,2*max_angular,3))
         self._E_buffer = np.zeros((max_prim,max_prim,max_angular,max_angular+2,2*max_angular,3)) 
+=======
+        self._E_buffer_1_e = np.zeros((max_angular+1,max_angular+3,2*(max_angular+1),3))
+        self._E_buffer = np.zeros((max_prim,max_prim,max_angular+1,max_angular+3,2*(max_angular+1),3)) 
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
         self._E_buffer_2 = np.zeros((max_prim,max_prim,max_comb,max_comb,max_comb,3))
         self._E_buffer_ssss_1 = np.zeros((max_prim,max_prim)) # Special case for ssss integrals
         self._E_buffer_ssss_2 = np.zeros((max_prim,max_prim)) # Special case for ssss integrals
@@ -73,7 +82,11 @@ class _Integrals:
             return overlap_integral_1_1_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
 
         
+<<<<<<< HEAD
     def Kinetic_energy_integral(self, shell1, shell2):
+=======
+    def Kinetic_energy_integral(self, shell_number_1, shell_number_2):
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
         angular_moment_1 = self.molecule_obj._basis_shell_list[shell_number_1].angular_moment
         angular_moment_2 = self.molecule_obj._basis_shell_list[shell_number_2].angular_moment
         if angular_moment_1 < angular_moment_2:
@@ -252,6 +265,7 @@ class _Integrals:
         return Electron_electron_matrix
 
 
+<<<<<<< HEAD
 
 
 
@@ -266,3 +280,5 @@ class _Integrals:
 
 
 
+=======
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9

@@ -81,7 +81,11 @@ def write_hermite_integral(max_angular):
     global steps
     S_file = open("slowquant/molecularintegrals/hermite_integral.py", "w+")
     S_file.write("import numpy as np\n")
+<<<<<<< HEAD
     S_file.write("from numba import jit, float64\n")
+=======
+    #S_file.write("from numba import jit, float64\n")
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
     S_file.write("from slowquant.molecularintegrals.utility import boys_function, boys_function_n_zero\n")
     S_file.write("\n\n")
     
@@ -91,7 +95,11 @@ def write_hermite_integral(max_angular):
                 for lc in range(max_angular+1):
                     for ld in range(max_angular+1):
                         if lc >= ld and la*(la+1)//2+lb >= lc*(lc+1)//2+ld:
+<<<<<<< HEAD
                             S_file.write("@jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)\n")
+=======
+                            #S_file.write("@jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)\n")
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
                             S_file.write("def R_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"(p, XPC, YPC, ZPC, RPC, R):\n")
                             steps = []
                             unique_steps = []

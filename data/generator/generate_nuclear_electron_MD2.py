@@ -4,14 +4,22 @@ import numpy as np
 def write_nuclear_electron(max_angular):
     S_file = open("slowquant/molecularintegrals/nuclear_electron_MD2.py", "w+")
     S_file.write("import numpy as np\n")
+<<<<<<< HEAD
     S_file.write("from numba import jit, float64\n")
+=======
+    #S_file.write("from numba import jit, float64\n")
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
     S_file.write("from slowquant.molecularintegrals.utility import Contraction_one_electron, Expansion_coeff_sum\n")
     S_file.write("from slowquant.molecularintegrals.expansion_coefficients import *\n")
     S_file.write("from slowquant.molecularintegrals.hermite_integral import *\n")
     S_file.write("\n\n")
     for lb in range(max_angular+1):
         for la in range(lb, max_angular+1):
+<<<<<<< HEAD
             S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:,:], float64[:,:,:,:]), nopython=True, cache=True)\n")
+=======
+            #S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:,:], float64[:,:,:,:]), nopython=True, cache=True)\n")
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
             S_file.write("def nuclear_electron_integral_"+str(la)+"_"+str(lb)+"_MD2(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, atoms, output_buffer, primitives_buffer, Norm_array, E_buffer, R_buffer):\n")
             S_file.write("    number_primitive_1 = gauss_exp_1.shape[0]\n")
             S_file.write("    number_primitive_2 = gauss_exp_2.shape[0]\n")

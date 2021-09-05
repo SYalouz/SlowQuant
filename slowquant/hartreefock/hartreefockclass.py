@@ -89,7 +89,11 @@ class _HartreeFock():
                 for j in range(0, len(D[0])):
                     Eel += D[i,j]*(Hcore[i,j]+F[i,j])
 
+<<<<<<< HEAD
             #Convergance
+=======
+            #Convergence
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
             dE = Eel - E0el
             rmsD = 0
             for i in range(0, len(D0)):

@@ -1,15 +1,24 @@
 import numpy as np
+<<<<<<< HEAD
 from numba import jit, float64
 from slowquant.molecularintegrals.utility import boys_function, boys_function_n_zero
 
 
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
+=======
+from slowquant.molecularintegrals.utility import boys_function, boys_function_n_zero
+
+
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def R_0_0_0_0(p, XPC, YPC, ZPC, RPC, R):
     R[0,0,0] = boys_function_n_zero(p*RPC*RPC)
     return R[:,:,:,0]
 
 
+<<<<<<< HEAD
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
+=======
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def R_1_0_0_0(p, XPC, YPC, ZPC, RPC, R):
     R[0,0,0] = boys_function_n_zero(p*RPC*RPC)
     R_0_0_0_1 = -2.0*p * boys_function(1,p*RPC*RPC)
@@ -19,7 +28,10 @@ def R_1_0_0_0(p, XPC, YPC, ZPC, RPC, R):
     return R[:,:,:,0]
 
 
+<<<<<<< HEAD
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
+=======
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def R_1_0_1_0(p, XPC, YPC, ZPC, RPC, R):
     R[0,0,0] = boys_function_n_zero(p*RPC*RPC)
     R_0_0_0_1 = -2.0*p * boys_function(1,p*RPC*RPC)
@@ -38,7 +50,10 @@ def R_1_0_1_0(p, XPC, YPC, ZPC, RPC, R):
     return R[:,:,:,0]
 
 
+<<<<<<< HEAD
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
+=======
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def R_1_1_0_0(p, XPC, YPC, ZPC, RPC, R):
     R[0,0,0] = boys_function_n_zero(p*RPC*RPC)
     R_0_0_0_1 = -2.0*p * boys_function(1,p*RPC*RPC)
@@ -57,7 +72,10 @@ def R_1_1_0_0(p, XPC, YPC, ZPC, RPC, R):
     return R[:,:,:,0]
 
 
+<<<<<<< HEAD
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
+=======
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def R_1_1_1_0(p, XPC, YPC, ZPC, RPC, R):
     R[0,0,0] = boys_function_n_zero(p*RPC*RPC)
     R_0_0_0_1 = -2.0*p * boys_function(1,p*RPC*RPC)
@@ -93,7 +111,10 @@ def R_1_1_1_0(p, XPC, YPC, ZPC, RPC, R):
     return R[:,:,:,0]
 
 
+<<<<<<< HEAD
 @jit(float64[:,:,:](float64, float64, float64, float64, float64, float64[:,:,:,:]), nopython=True, cache=True)
+=======
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
 def R_1_1_1_1(p, XPC, YPC, ZPC, RPC, R):
     R[0,0,0] = boys_function_n_zero(p*RPC*RPC)
     R_0_0_0_1 = -2.0*p * boys_function(1,p*RPC*RPC)

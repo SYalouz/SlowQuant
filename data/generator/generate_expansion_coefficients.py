@@ -82,7 +82,11 @@ def generate_expansion_coefficients(max_angular_moment):
     global steps
     S_file = open("slowquant/molecularintegrals/expansion_coefficients.py", "w+")
     S_file.write("import numpy as np\n")
+<<<<<<< HEAD
     S_file.write("from numba import jit, float64\n")
+=======
+    #S_file.write("from numba import jit, float64\n")
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
     S_file.write("\n\n")
     
     for la in range(max_angular_moment+1):
@@ -90,7 +94,11 @@ def generate_expansion_coefficients(max_angular_moment):
             if la >= lb and la+lb <= 2*max_angular_moment:
                 for lc in range(0, la+lb+1):
                     if lc == la+lb or lc == 0:
+<<<<<<< HEAD
                         S_file.write("@jit(float64[:,:,:,:](float64, float64, float64[:], float64[:], float64[:], float64[:,:,:,:]), nopython=True, cache=True)\n")
+=======
+                        #S_file.write("@jit(float64[:,:,:,:](float64, float64, float64[:], float64[:], float64[:], float64[:,:,:,:]), nopython=True, cache=True)\n")
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
                         S_file.write("def E_"+str(la)+"_"+str(lb)+"_"+str(lc)+"(q, p12, XAB, XPA, XPB, E):\n")
                         steps = []
                         for i in range(la, -1, -1):
@@ -110,7 +118,11 @@ def generate_expansion_coefficients(max_angular_moment):
             if la+lb <= 2*max_angular_moment + 2:
                 for lc in range(0, la+lb+1): # keeping the lc part incase needed for future integrals
                     if lc == 0:
+<<<<<<< HEAD
                         S_file.write("@jit(float64[:,:,:,:](float64, float64, float64[:], float64[:], float64[:], float64[:,:,:,:]), nopython=True, cache=True)\n")
+=======
+                        #S_file.write("@jit(float64[:,:,:,:](float64, float64, float64[:], float64[:], float64[:], float64[:,:,:,:]), nopython=True, cache=True)\n")
+>>>>>>> f4aef438580fb18e556a59f1ef22e55c6bd341e9
                         S_file.write("def E_"+str(la)+"_"+str(lb)+"_"+str(lc)+"(q, p12, XAB, XPA, XPB, E):\n")
                         steps = []
                         for i in range(la, -1, -1):

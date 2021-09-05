@@ -25,7 +25,7 @@ def write_electron_electron(max_angular):
     S_file = open("slowquant/molecularintegrals/electron_electron_MD4.py", "w+")
     S_file.write("import numpy as np\n")
     S_file.write("from numpy import exp\n")
-    S_file.write("from numba import jit, float64\n")
+    #S_file.write("from numba import jit, float64\n")
     S_file.write("from slowquant.molecularintegrals.utility import ERI_expansion_coeff_sum, Contraction_two_electron, ERI_expansion_coeff_sum_X_X_S_S\n")
     S_file.write("from slowquant.molecularintegrals.expansion_coefficients import *\n")
     S_file.write("from slowquant.molecularintegrals.hermite_integral import *\n")
@@ -38,7 +38,7 @@ def write_electron_electron(max_angular):
                     for ld in range(max_angular+1):
                         if lc >= ld and la*(la+1)//2+lb >= lc*(lc+1)//2+ld:
                             combinations = (la+1)*((la+1)+1)//2*(lb+1)*((lb+1)+1)//2*(lc+1)*((lc+1)+1)//2*(ld+1)*((ld+1)+1)//2
-                            S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)\n")
+                            #S_file.write("@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)\n")
                             S_file.write("def electron_electron_integral_"+str(la)+"_"+str(lb)+"_"+str(lc)+"_"+str(ld)+"_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, bra_array, ket_array):\n")
                             S_file.write("    number_primitive_1 = Contra_coeffs_1.shape[0]\n")
                             S_file.write("    number_primitive_2 = Contra_coeffs_2.shape[0]\n")
@@ -89,8 +89,8 @@ def write_electron_electron(max_angular):
                                 indentation = indentation + "            "
                                 if la > 1:
                                     # For angular moment 0 and 1, the second part of the normalization is the 
-                                    #  same for all of the pritimives. To save some flops these can be 
-                                    #  applied after the contraction, wheras higher angular momemntum have to be
+                                    #  same for all of the primitives. To save some flops these can be 
+                                    #  applied after the contraction, whereas higher angular momentum have to be
                                     #  applied straight away.
                                     S_file.write(indentation+"temp1 = Norm_array[x1, y1, z1]\n")
                             else:
@@ -134,7 +134,7 @@ def write_electron_electron(max_angular):
                                 S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum_X_X_S_S(E_buff_1[i,j,"+x1+","+x2+",:,0],E_buff_1[i,j,"+y1+","+y2+",:,1],E_buff_1[i,j,"+z1+","+z2+",:,2],E_buff_2[k,l,"+x3+","+x4+",:,0],E_buff_2[k,l,"+y3+","+y4+",:,1],E_buff_2[k,l,"+z3+","+z4+",:,2],R_array,")
                             else:
                                 S_file.write(indentation+"primitives_buffer[i,j,k,l,counter] = ERI_expansion_coeff_sum(E_buff_1[i,j,"+x1+","+x2+",:,0],E_buff_1[i,j,"+y1+","+y2+",:,1],E_buff_1[i,j,"+z1+","+z2+",:,2],E_buff_2[k,l,"+x3+","+x4+",:,0],E_buff_2[k,l,"+y3+","+y4+",:,1],E_buff_2[k,l,"+z3+","+z4+",:,2],R_array,")
-                            # Just an ugly way to make the generated code abit nice, since x y z are always zero if angular moment is 0.
+                            # Just an ugly way to make the generated code a bit nice, since x y z are always zero if angular moment is 0.
                             if x1 == "x1":
                                 S_file.write("x1+")
                             if x2 == "x2":

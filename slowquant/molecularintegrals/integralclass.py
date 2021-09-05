@@ -6,20 +6,21 @@ from slowquant.molecularintegrals.nuclear_electron_MD2 import *
 from slowquant.molecularintegrals.electron_electron_MD4 import *
 from slowquant.molecularintegrals.handtuned_integrals import *
 from slowquant.molecularintegrals.bra_expansion_coeffs import *
+from slowquant.molecularintegrals.kinetic_energy_MD import *
 from slowquant.molecularintegrals.utility import put_in_array_ERI, make_idx_list_two_electron, make_idx_list_one_electron, PsuedoNorm, PsuedoNorm2
 
 
 class _Integrals:
     def __init__(self, molecule_object):
-        max_angular = 2
+        max_angular = 1
         max_comb    = (max_angular+1)*(max_angular+1+1)//2 
         max_prim    = 10
         self.molecule_obj = molecule_object
         self._output_buffer = np.zeros((max_comb**4)) 
         self._primitives_buffer = np.zeros((max_prim,max_prim,max_comb**2))
         self._primitives_buffer_2e = np.zeros((max_prim,max_prim,max_prim,max_prim,max_comb**4)) 
-        self._E_buffer_1_e = np.zeros((max_comb,max_comb,max_comb,3))
-        self._E_buffer = np.zeros((max_prim,max_prim,max_comb,max_comb,max_comb,3)) 
+        self._E_buffer_1_e = np.zeros((max_angular+1,max_angular+3,2*(max_angular+1),3))
+        self._E_buffer = np.zeros((max_prim,max_prim,max_angular+1,max_angular+3,2*(max_angular+1),3)) 
         self._E_buffer_2 = np.zeros((max_prim,max_prim,max_comb,max_comb,max_comb,3))
         self._E_buffer_ssss_1 = np.zeros((max_prim,max_prim)) # Special case for ssss integrals
         self._E_buffer_ssss_2 = np.zeros((max_prim,max_prim)) # Special case for ssss integrals
@@ -72,8 +73,24 @@ class _Integrals:
             return overlap_integral_1_1_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
 
         
-    def Kinetic_energy_integral(self, shell1, shell2):
-        None
+    def Kinetic_energy_integral(self, shell_number_1, shell_number_2):
+        angular_moment_1 = self.molecule_obj._basis_shell_list[shell_number_1].angular_moment
+        angular_moment_2 = self.molecule_obj._basis_shell_list[shell_number_2].angular_moment
+        if angular_moment_1 < angular_moment_2:
+            shell_number_1, shell_number_2 = shell_number_2, shell_number_1
+            angular_moment_1, angular_moment_2 = angular_moment_2, angular_moment_1
+        Coord_1 = self.molecule_obj._basis_shell_list[shell_number_1].coord
+        Coord_2 = self.molecule_obj._basis_shell_list[shell_number_2].coord
+        gauss_exp_1 = self.molecule_obj._basis_shell_list[shell_number_1].exponents
+        gauss_exp_2 = self.molecule_obj._basis_shell_list[shell_number_2].exponents
+        Contra_coeffs_1 = self.molecule_obj._basis_shell_list[shell_number_1].pseudo_normed_contract_coeffs
+        Contra_coeffs_2 = self.molecule_obj._basis_shell_list[shell_number_2].pseudo_normed_contract_coeffs
+        if angular_moment_1 == 0 and angular_moment_2 == 0:
+            return kinetic_energy_integral_0_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
+        elif angular_moment_1 == 1 and angular_moment_2 == 0:
+            return kinetic_energy_integral_1_0_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
+        elif angular_moment_1 == 1 and angular_moment_2 == 1:
+            return kinetic_energy_integral_1_1_MD(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, Contra_coeffs_1, Contra_coeffs_2, self._output_buffer, self._primitives_buffer, self._norm_array, self._E_buffer_1_e)
         
         
     def Nuclear_electron_attraction_integral(self, shell_number_1, shell_number_2):
@@ -204,6 +221,17 @@ class _Integrals:
         return Overlap_matrix
         
         
+    def get_Kinetic_energy_matrix(self):
+        Kinetic_energy_matrix = np.zeros((self.molecule_obj.get_number_basis_function(), self.molecule_obj.get_number_basis_function()))
+        for i in range(0, self.molecule_obj.get_number_shells()):
+            for j in range(i, self.molecule_obj.get_number_shells()):
+                temp = self.Kinetic_energy_integral(i, j)
+                idx = self.get_idx_list_one_electron(i, j)
+                for k in range(0, len(idx)):
+                    Kinetic_energy_matrix[idx[k,0],idx[k,1]] = Kinetic_energy_matrix[idx[k,1],idx[k,0]] = temp[k]
+        return Kinetic_energy_matrix
+        
+        
     def get_Nuclear_electron_matrix(self):
         Nuclear_electron_matrix = np.zeros((self.molecule_obj.get_number_basis_function(), self.molecule_obj.get_number_basis_function()))
         for i in range(0, self.molecule_obj.get_number_shells()):
@@ -222,19 +250,5 @@ class _Integrals:
             temp = self.Electron_electron_repulsion_integral(i,j,k,l)
             Electron_electron_matrix = put_in_array_ERI(self.molecule_obj._basis_shell_list[i].basis_function_idx, self.molecule_obj._basis_shell_list[j].basis_function_idx, self.molecule_obj._basis_shell_list[k].basis_function_idx, self.molecule_obj._basis_shell_list[l].basis_function_idx,Electron_electron_matrix,temp)
         return Electron_electron_matrix
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

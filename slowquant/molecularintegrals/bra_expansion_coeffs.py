@@ -1,9 +1,6 @@
 import numpy as np
-from numba import jit, float64
-from numba.types import Tuple
 from slowquant.molecularintegrals.expansion_coefficients import *
 
-@jit(Tuple((float64[:,:,:,:,:,:],float64[:,:,:]))(float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def bra_expansion_coeffs_0_0(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, E_buff_1, bra_array):
     number_primitive_1 = gauss_exp_1.shape[0]
     number_primitive_2 = gauss_exp_2.shape[0]
@@ -22,7 +19,6 @@ def bra_expansion_coeffs_0_0(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, E_buff_
     return E_buff_1, bra_array
 
 
-@jit(Tuple((float64[:,:,:,:,:,:],float64[:,:,:]))(float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def bra_expansion_coeffs_1_0(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, E_buff_1, bra_array):
     number_primitive_1 = gauss_exp_1.shape[0]
     number_primitive_2 = gauss_exp_2.shape[0]
@@ -41,7 +37,6 @@ def bra_expansion_coeffs_1_0(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, E_buff_
     return E_buff_1, bra_array
 
 
-@jit(Tuple((float64[:,:,:,:,:,:],float64[:,:,:]))(float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def bra_expansion_coeffs_1_1(Coord_1, Coord_2, gauss_exp_1, gauss_exp_2, E_buff_1, bra_array):
     number_primitive_1 = gauss_exp_1.shape[0]
     number_primitive_2 = gauss_exp_2.shape[0]

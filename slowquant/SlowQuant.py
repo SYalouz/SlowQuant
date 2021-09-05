@@ -1,6 +1,7 @@
 import numpy as np
 from slowquant.molecule.moleculeclass import _Molecule
 from slowquant.molecularintegrals.integralclass import _Integrals
+#from slowquant.hartreefock.hartreefockclass import _HartreeFock
 
 class SlowQuant:
     """
@@ -13,9 +14,6 @@ class SlowQuant:
     """
     def __init__(self):
         self.Molecule = False
-        self.memory_avail = 4000 # How much memory can be used, should be smaller than max memory.
-        self.memory_used = 0     # Estimate of used memory.
-        self.memory_needed = 0   # Estimate of needed memory for an upcomming calculation.
         
     def set_molecule(self, molecule_file, set_unit="angstrom"):
         """
@@ -29,3 +27,6 @@ class SlowQuant:
     def initialize_integrals(self):
         self.Integrals = _Integrals(self.Molecule)
         
+    def hartree_fock(self):
+        self.hartree_fock = _HartreeFock(self.molecule, self.Integrals)
+         

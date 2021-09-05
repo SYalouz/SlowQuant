@@ -1,13 +1,11 @@
 import numpy as np
 from numpy import exp
-from numba import jit, float64
 from slowquant.molecularintegrals.utility import ERI_expansion_coeff_sum, Contraction_two_electron, ERI_expansion_coeff_sum_X_X_S_S
 from slowquant.molecularintegrals.expansion_coefficients import *
 from slowquant.molecularintegrals.hermite_integral import *
 from slowquant.molecularintegrals.bra_expansion_coeffs import *
 
 
-@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def electron_electron_integral_0_0_0_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, bra_array, ket_array):
     number_primitive_1 = Contra_coeffs_1.shape[0]
     number_primitive_2 = Contra_coeffs_2.shape[0]
@@ -45,7 +43,6 @@ def electron_electron_integral_0_0_0_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_
     return output_buffer
 
 
-@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def electron_electron_integral_1_0_0_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, bra_array, ket_array):
     number_primitive_1 = Contra_coeffs_1.shape[0]
     number_primitive_2 = Contra_coeffs_2.shape[0]
@@ -87,7 +84,6 @@ def electron_electron_integral_1_0_0_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_
     return output_buffer
 
 
-@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def electron_electron_integral_1_0_1_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, bra_array, ket_array):
     number_primitive_1 = Contra_coeffs_1.shape[0]
     number_primitive_2 = Contra_coeffs_2.shape[0]
@@ -134,7 +130,6 @@ def electron_electron_integral_1_0_1_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_
     return output_buffer
 
 
-@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def electron_electron_integral_1_1_0_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, bra_array, ket_array):
     number_primitive_1 = Contra_coeffs_1.shape[0]
     number_primitive_2 = Contra_coeffs_2.shape[0]
@@ -179,7 +174,6 @@ def electron_electron_integral_1_1_0_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_
     return output_buffer
 
 
-@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def electron_electron_integral_1_1_1_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, bra_array, ket_array):
     number_primitive_1 = Contra_coeffs_1.shape[0]
     number_primitive_2 = Contra_coeffs_2.shape[0]
@@ -229,7 +223,6 @@ def electron_electron_integral_1_1_1_0_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_
     return output_buffer
 
 
-@jit(float64[:](float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:], float64[:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:,:,:], float64[:,:,:,:], float64[:], float64[:,:,:], float64[:,:,:], float64[:,:,:]), nopython=True, cache=True)
 def electron_electron_integral_1_1_1_1_MD4(Coord_3, Coord_4, gauss_exp_3, gauss_exp_4, Contra_coeffs_1, Contra_coeffs_2, Contra_coeffs_3, Contra_coeffs_4, primitives_buffer, E_buff_1, E_buff_2, R_buffer, output_buffer, Norm_array, bra_array, ket_array):
     number_primitive_1 = Contra_coeffs_1.shape[0]
     number_primitive_2 = Contra_coeffs_2.shape[0]
